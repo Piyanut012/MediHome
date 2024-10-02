@@ -1,7 +1,12 @@
 คำสั่ง Set up framwork ที่ใช้
 (อย่าลืมอัพเดต npm กับ node ให้ version ล่าสุด)
+
 Node.js : https://nodejs.org/en
-npm : npm install -g npm@latest
+
+npm
+```sh
+npm install -g npm@latest
+```
 
 Backend
 ```sh
