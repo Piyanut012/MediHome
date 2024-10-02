@@ -24,4 +24,5 @@ npm i react-router-dom axios react-icons notistack dotenv
 npm run dev
 ```
 Backend PORT : 3000
+
 Frontend PORT : 5173
