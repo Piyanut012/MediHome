@@ -21,6 +21,7 @@ app.get('/', (request, response) => {
 
 app.use('/user', UserRoute);
 
+// Connect to the server
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
