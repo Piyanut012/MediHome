@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const Login = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
   return (
     <section class="bg-fourth">
       <div class="flex flex-col items-center justify-center py-6 mx-auto my-auto min-h-screen">
@@ -15,48 +19,59 @@ const Login = () => {
               Log in to your account
             </h1>
             <form class="space-y-4 md:space-y-6" action="#" method="post">
-              <div>
-                <label
-                  for="username"
-                  class="block mb-2 text-sm font-medium text-first"
-                >
-                  Username
-                </label>
-                <input
-                  type="text"
-                  name="username"
-                  id="username"
-                  class="bg-fourth border border-second text-gray-700 rounded-lg focus:ring-second focus:border-second block w-full p-2.5"
-                  placeholder="username"
-                  required=""
-                />
-              </div>
-              <div>
-                <label
-                  for="password"
-                  class="block mb-2 text-sm font-medium text-first"
-                >
-                  Password
-                </label>
-                <input
-                  type="password"
-                  name="password"
-                  id="password"
-                  placeholder="••••••••"
-                  class="bg-fourth border border-second text-gray-700 rounded-lg focus:ring-second focus:border-second block w-full p-2.5"
-                  required=""
-                />
-              </div>
+              <motion.div
+                key="step1"
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.5 }}
+              >
+                <div>
+                  <label
+                    for="username"
+                    class="block mb-2 text-sm font-medium text-first"
+                  >
+                    Username
+                  </label>
+                  <input
+                    type="text"
+                    name="username"
+                    id="username"
+                    class="mb-4 bg-fourth border border-second text-gray-700 rounded-lg focus:ring-second focus:border-second block w-full p-2.5"
+                    placeholder="medihome99"
+                    required=""
+                  />
+                </div>
+                <div>
+                  <label
+                    for="password"
+                    class="block mb-2 text-sm font-medium text-first"
+                  >
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    name="password"
+                    id="password"
+                    placeholder="••••••••"
+                    class="bg-fourth border border-second text-gray-700 rounded-lg focus:ring-second focus:border-second block w-full p-2.5"
+                    required=""
+                  />
+                </div>
+              </motion.div>
               <hr class="border-black" />
               <button
                 type="submit"
-                class="w-full text-fourth bg-first hover:bg-second focus:ring-4 focus:outline-none focus:ring-second font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                class="w-full text-fourth bg-first hover:bg-green-500 focus:ring-4 focus:outline-none focus:ring-second font-medium rounded-lg text-sm px-5 py-2.5 text-center"
               >
                 Log in
               </button>
               <p class="text-sm font-light text-first">
                 Don't have an account with us?&nbsp;
-                <a href="#" class="font-medium text-first hover:underline">
+                <a
+                  href="/register"
+                  class="font-medium text-first hover:underline"
+                >
                   Register here!
                 </a>
               </p>
