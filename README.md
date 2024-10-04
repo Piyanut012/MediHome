@@ -16,7 +16,7 @@ npm i express nodemon mongoose cors dotenv
 Frontend
 ```sh
 cd frontend
-npm i react-router-dom axios react-icons notistack dotenv
+npm i react-router-dom axios react-icons notistack dotenv flowbite
 ```
 
 วิธีรันทั้งสองฝั่งใช้คำสั่ง
