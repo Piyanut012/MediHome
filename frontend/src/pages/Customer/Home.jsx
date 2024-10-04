@@ -2,6 +2,7 @@ import React, { useEffect, useState} from "react";
 import axios from 'axios';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import NavBar from "../../components/NavBar";
+import 'flowbite';
 
 const Home = () => {
   const [users, setUsers] = useState([]);
