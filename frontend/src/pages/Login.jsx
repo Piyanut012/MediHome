@@ -1,24 +1,31 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Submit logic here
+    console.log("Form submitted");
+    
+  };
+
   return (
-    <section class="bg-fourth">
-      <div class="flex flex-col items-center justify-center py-6 mx-auto my-auto min-h-screen">
-        <h1 class="flex items-center mb-3 text-3xl font-bold text-first">
+    <section className="bg-theme4">
+      <div className="flex flex-col items-center justify-center py-6 mx-auto my-auto min-h-screen">
+        <h1 className="flex items-center mb-3 text-3xl font-bold text-theme1">
           MediHome
         </h1>
-        <div class="w-5/6 rounded-lg shadow border m-0 md:max-w-md xl:p-0 bg-fifth border-third">
-          <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-            <h1 class="text-xl font-bold leading-tight tracking-tight text-first md:text-2xl">
+        <div className="w-5/6 rounded-lg shadow border m-0 md:max-w-md xl:p-0 bg-theme5 border-theme3">
+          <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
+            <h1 className="text-xl font-bold leading-tight tracking-tight text-theme1 md:text-2xl">
               Log in to your account
             </h1>
-            <form class="space-y-4 md:space-y-6" action="#" method="post">
+            <form className="space-y-4 md:space-y-6" action="#" method="post">
               <motion.div
                 key="step1"
                 initial={{ opacity: 0, x: -50 }}
@@ -28,8 +35,8 @@ const Login = () => {
               >
                 <div>
                   <label
-                    for="username"
-                    class="block mb-2 text-sm font-medium text-first"
+                    htmlFor="username"
+                    className="block mb-2 text-sm font-medium text-theme1"
                   >
                     Username
                   </label>
@@ -37,15 +44,15 @@ const Login = () => {
                     type="text"
                     name="username"
                     id="username"
-                    class="mb-4 bg-fourth border border-second text-gray-700 rounded-lg focus:ring-second focus:border-second block w-full p-2.5"
+                    className="mb-4 bg-theme4 border border-theme2 text-gray-700 rounded-lg focus:ring-theme2 focus:border-theme2 block w-full p-2.5"
                     placeholder="medihome99"
                     required=""
                   />
                 </div>
                 <div>
                   <label
-                    for="password"
-                    class="block mb-2 text-sm font-medium text-first"
+                    htmlFor="password"
+                    className="block mb-2 text-sm font-medium text-theme1"
                   >
                     Password
                   </label>
@@ -54,26 +61,26 @@ const Login = () => {
                     name="password"
                     id="password"
                     placeholder="••••••••"
-                    class="bg-fourth border border-second text-gray-700 rounded-lg focus:ring-second focus:border-second block w-full p-2.5"
+                    className="bg-theme4 border border-theme2 text-gray-700 rounded-lg focus:ring-theme2 focus:border-theme2 block w-full p-2.5"
                     required=""
                   />
                 </div>
               </motion.div>
-              <hr class="border-black" />
+              <hr className="border-black" />
               <button
                 type="submit"
-                class="w-full text-fourth bg-first hover:bg-green-500 focus:ring-4 focus:outline-none focus:ring-second font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                className="w-full text-theme4 bg-theme1 hover:bg-green-500 focus:ring-4 focus:outline-none focus:ring-theme2 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
               >
                 Log in
               </button>
-              <p class="text-sm font-light text-first">
+              <p className="text-sm font-light text-theme1">
                 Don't have an account with us?&nbsp;
-                <a
-                  href="/register"
-                  class="font-medium text-first hover:underline"
+                <Link
+                  to="/register"
+                  className="font-medium text-theme1 hover:underline"
                 >
                   Register here!
-                </a>
+                </Link>
               </p>
             </form>
           </div>

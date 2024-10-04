@@ -1,21 +1,44 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const Register = () => {
   const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [password1, setPassword1] = useState("");
+  const [password2, setPassword2] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [age, setAge] = useState(0);
 
   const [step, setStep] = useState(1);
+  const [error, setError] = useState([]);
 
   const handleNextClick = (e) => {
     e.preventDefault();
+
+    const errors = [];
+
+    if (username.length < 4) {
+      errors.push("Username must be at least 4 characters long.");
+    }
+
+    if (password1.length < 8) {
+      errors.push("Password must be at least 8 characters long.");
+    }
+
+    if (password1 !== password2) {
+      errors.push("Passwords do not match.");
+    }
+
+    if (errors.length > 0) {
+      setError(errors); // Set all errors at once
+      return;
+    }
+
     setStep(2);
+    setError([]);
   };
 
   const handleBackClick = (e) => {
@@ -25,22 +48,36 @@ const Register = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Submit logic here
-    
+    axios
+      .post("http://localhost:5173/register", {
+        name,
+        email,
+        username,
+        password2,
+        phone,
+        age,
+      })
+      .then((result) => {
+        console.log(result);
+        navigate("/login");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (
-    <section class="bg-fourth">
-      <div class="flex flex-col items-center justify-center py-6 mx-auto my-auto min-h-screen">
-        <h1 class="flex items-center mb-3 text-3xl font-bold text-first">
+    <section className="bg-theme4">
+      <div className="flex flex-col items-center justify-center py-6 mx-auto my-auto min-h-screen">
+        <h1 className="flex items-center mb-3 text-3xl font-bold text-theme1">
           MediHome
         </h1>
-        <div class="w-5/6 rounded-lg shadow border m-0 md:max-w-md xl:p-0 bg-fifth border-third">
-          <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-            <h1 class="text-xl font-bold leading-tight tracking-tight text-first md:text-2xl">
+        <div className="w-5/6 rounded-lg shadow border m-0 md:max-w-md xl:p-0 bg-theme5 border-theme3">
+          <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
+            <h1 className="text-xl font-bold leading-tight tracking-tight text-theme1 md:text-2xl">
               {step === 1 ? "Register an account" : "Complete your profile"}
             </h1>
-            <form class="space-y-4 md:space-y-6" action="#" method="post">
+            <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
               {step === 1 ? (
                 <motion.div
                   key="step1"
@@ -51,8 +88,8 @@ const Register = () => {
                 >
                   <div>
                     <label
-                      for="username"
-                      class="block mb-2 text-sm font-medium text-first"
+                      htmlFor="username"
+                      className="block mb-2 text-sm font-medium text-theme1"
                     >
                       Username
                     </label>
@@ -60,43 +97,57 @@ const Register = () => {
                       type="text"
                       name="username"
                       id="username"
-                      class="mb-4 bg-fourth border border-second text-gray-700 rounded-lg focus:ring-second focus:border-second block w-full p-2.5"
+                      className="mb-4 bg-theme4 border border-theme2 text-gray-900 rounded-lg focus:ring-theme2 focus:border-theme2 block w-full p-2.5"
                       placeholder="medihome99"
-                      required=""
+                      onChange={(e) => setUsername(e.target.value)}
                     />
                   </div>
                   <div>
                     <label
-                      for="password1"
-                      class="block mb-2 text-sm font-medium text-first"
+                      htmlFor="password1"
+                      className="block mb-2 text-sm font-medium text-theme1"
                     >
                       Password
                     </label>
                     <input
-                      type="password1"
+                      type="password"
                       name="password1"
                       id="password1"
                       placeholder="••••••••"
-                      class="mb-4 bg-fourth border border-second text-gray-700 rounded-lg focus:ring-second focus:border-second block w-full p-2.5"
-                      required=""
+                      className="mb-4 bg-theme4 border border-theme2 text-gray-900 rounded-lg focus:ring-theme2 focus:border-theme2 block w-full p-2.5"
+                      onChange={(e) => setPassword1(e.target.value)}
                     />
                   </div>
                   <div>
                     <label
-                      for="password2"
-                      class="block mb-2 text-sm font-medium text-first"
+                      htmlFor="password2"
+                      className="block mb-2 text-sm font-medium text-theme1"
                     >
                       Confirm password
                     </label>
                     <input
-                      type="password2"
+                      type="password"
                       name="password2"
                       id="password2"
                       placeholder="••••••••"
-                      class="mb-4 bg-fourth border border-second text-gray-700 rounded-lg focus:ring-second focus:border-second block w-full p-2.5"
-                      required=""
+                      className="mb-4 bg-theme4 border border-theme2 text-gray-900 rounded-lg focus:ring-theme2 focus:border-theme2 block w-full p-2.5"
+                      onChange={(e) => setPassword2(e.target.value)}
                     />
                   </div>
+                  {error.length > 0 && (
+                    <div
+                      className="p-4 mb-4 text-sm text-red-600 rounded-lg bg-red-200 border border-red-400"
+                      role="alert"
+                    >
+                      <ul>
+                        {error.map((err, index) => (
+                          <li key={index}>
+                            <b>!</b>&nbsp; {err}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </motion.div>
               ) : (
                 <motion.div
@@ -108,8 +159,8 @@ const Register = () => {
                 >
                   <div>
                     <label
-                      for="email"
-                      class="block mb-2 text-sm font-medium text-first"
+                      htmlFor="email"
+                      className="block mb-2 text-sm font-medium text-theme1"
                     >
                       Email
                     </label>
@@ -117,15 +168,15 @@ const Register = () => {
                       type="email"
                       name="email"
                       id="email"
-                      class="mb-4 bg-fourth border border-second text-gray-700 rounded-lg focus:ring-second focus:border-second block w-full p-2.5"
+                      className="mb-4 bg-theme4 border border-theme2 text-gray-900 rounded-lg focus:ring-theme2 focus:border-theme2 block w-full p-2.5"
                       placeholder="medi@home.com"
-                      required=""
+                      onChange={(e) => setEmail(e.target.value)}
                     />
                   </div>
                   <div>
                     <label
-                      for="name"
-                      class="block mb-2 text-sm font-medium text-first"
+                      htmlFor="name"
+                      className="block mb-2 text-sm font-medium text-theme1"
                     >
                       Name
                     </label>
@@ -133,15 +184,15 @@ const Register = () => {
                       type="text"
                       name="name"
                       id="name"
-                      class="mb-4 bg-fourth border border-second text-gray-700 rounded-lg focus:ring-second focus:border-second block w-full p-2.5"
+                      className="mb-4 bg-theme4 border border-theme2 text-gray-900 rounded-lg focus:ring-theme2 focus:border-theme2 block w-full p-2.5"
                       placeholder="Medi Home"
-                      required=""
+                      onChange={(e) => setName(e.target.value)}
                     />
                   </div>
                   <div>
                     <label
-                      for="phone"
-                      class="block mb-2 text-sm font-medium text-first"
+                      htmlFor="phone"
+                      className="block mb-2 text-sm font-medium text-theme1"
                     >
                       Phone
                     </label>
@@ -149,15 +200,15 @@ const Register = () => {
                       type="tel"
                       name="phone"
                       id="phone"
-                      class="mb-4 bg-fourth border border-second text-gray-700 rounded-lg focus:ring-second focus:border-second block w-full p-2.5"
+                      className="mb-4 bg-theme4 border border-theme2 text-gray-900 rounded-lg focus:ring-theme2 focus:border-theme2 block w-full p-2.5"
                       placeholder="0801234567"
-                      required=""
+                      onChange={(e) => setPhone(e.target.value)}
                     />
                   </div>
                   <div>
                     <label
-                      for="age"
-                      class="block mb-2 text-sm font-medium text-first"
+                      htmlFor="age"
+                      className="block mb-2 text-sm font-medium text-theme1"
                     >
                       Age
                     </label>
@@ -165,37 +216,40 @@ const Register = () => {
                       type="number"
                       name="age"
                       id="age"
-                      class="mb-4 bg-fourth border border-second text-gray-700 rounded-lg focus:ring-second focus:border-second block w-full p-2.5"
+                      className="mb-4 bg-theme4 border border-theme2 text-gray-900 rounded-lg focus:ring-theme2 focus:border-theme2 block w-full p-2.5"
                       placeholder="0"
-                      required=""
+                      onChange={(e) => setAge(e.target.value)}
                     />
                   </div>
                 </motion.div>
               )}
-              <hr class="border-black" />
-              <div class="flex justify-between space-x-4">
+              <hr className="border-black" />
+              <div className="flex justify-between space-x-4">
                 {step === 2 && (
                   <button
                     onClick={handleBackClick}
-                    className="w-1/3 text-fourth bg-first hover:bg-green-500 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                    className="w-1/3 text-theme4 bg-theme1 hover:bg-green-500 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center"
                   >
                     Back
                   </button>
                 )}
                 <button
-                  onClick={step === 1 ? handleNextClick : handleSubmit }
+                  onClick={step === 1 ? handleNextClick : handleSubmit}
                   className={`w-${
                     step === 1 ? "full" : "5/6"
-                  } text-fourth bg-first hover:bg-green-500 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center`}
+                  } text-theme4 bg-theme1 hover:bg-green-500 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center`}
                 >
                   {step === 1 ? "Next" : "Register"}
                 </button>
               </div>
-              <p class="text-sm font-light text-first">
+              <p className="text-sm font-light text-theme1">
                 Already have an account?&nbsp;
-                <a href="/login" class="font-medium text-first hover:underline">
+                <Link
+                  to="/login"
+                  className="font-medium text-theme1 hover:underline"
+                >
                   Log in here!
-                </a>
+                </Link>
               </p>
             </form>
           </div>

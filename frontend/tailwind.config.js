@@ -6,15 +6,6 @@ export default {
     "./node_modules/flowbite/**/*.js"
   ],
   theme: {
-    extend: {
-      colors: {
-        'first': '#11942d',
-        'second': '#b0f792',
-        'third': '#e0ffd9',
-        'fourth': '#fffdf9',
-        'fifth': '#fcffc5',
-      }
-    }
     colors: {
       theme1: '#11942D',
       theme2: '#B0F792',

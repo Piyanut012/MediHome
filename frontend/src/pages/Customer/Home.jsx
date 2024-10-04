@@ -32,7 +32,7 @@ const Home = () => {
       <h1 className="text-theme1 text-4xl mb-2">Test Show</h1>
       <ul>
         {users.map(user => (
-          <li key={user.id}>{user.name} ({user.role})</li>
+          <li key={user.id}>{user.username}, {user.email} {user.name} ({user.role})</li>
         ))}
       </ul>
     </div>
