@@ -17,13 +17,13 @@ const Login = () => {
   return (
     <section className="bg-theme4">
       <div className="flex flex-col items-center justify-center py-6 mx-auto my-auto min-h-screen">
-        <h1 className="flex items-center mb-3 text-3xl font-bold text-theme1">
+        <h1 className="flex items-center mb-6 text-4xl font-extrabold text-theme1">
           MediHome
         </h1>
         <div className="w-5/6 rounded-lg shadow border m-0 md:max-w-md xl:p-0 bg-theme5 border-theme3">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
             <h1 className="text-xl font-bold leading-tight tracking-tight text-theme1 md:text-2xl">
-              Log in to your account
+              เข้าสู่ระบบ
             </h1>
             <form className="space-y-4 md:space-y-6" action="#" method="post">
               <motion.div
@@ -38,7 +38,7 @@ const Login = () => {
                     htmlFor="username"
                     className="block mb-2 text-sm font-medium text-theme1"
                   >
-                    Username
+                    ชื่อผู้ใช้
                   </label>
                   <input
                     type="text"
@@ -54,7 +54,7 @@ const Login = () => {
                     htmlFor="password"
                     className="block mb-2 text-sm font-medium text-theme1"
                   >
-                    Password
+                    รหัสผ่าน
                   </label>
                   <input
                     type="password"
@@ -71,15 +71,15 @@ const Login = () => {
                 type="submit"
                 className="w-full text-theme4 bg-theme1 hover:bg-green-500 focus:ring-4 focus:outline-none focus:ring-theme2 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
               >
-                Log in
+                เข้าสู่ระบบ
               </button>
               <p className="text-sm font-light text-theme1">
-                Don't have an account with us?&nbsp;
+                หากคุณยังไม่มีบัญชีกับเรา&nbsp;
                 <Link
                   to="/register"
                   className="font-medium text-theme1 hover:underline"
                 >
-                  Register here!
+                  สมัครได้ที่นี่!
                 </Link>
               </p>
             </form>
