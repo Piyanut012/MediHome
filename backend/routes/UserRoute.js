@@ -15,14 +15,14 @@ router.get("/", async (request, response) => {
 });
 
 //Route to add a new user
-router.post('/add', async (request, response) => {
-    const newUser = new User(request.body);
-    try {
-        const user = await newUser.save();
-        response.status(201).send(user);
-    } catch (error) {
-        response.status(400).send(error);
-    }
+router.post("/add", async (request, response) => {
+  const newUser = new User(request.body);
+  try {
+    const user = await newUser.save();
+    response.status(201).send(user);
+  } catch (error) {
+    response.status(400).send(error);
+  }
 });
 
 // Route to check if a username is available
@@ -80,7 +80,10 @@ router.post("/register", async (request, response) => {
 
     // Hash the password
     const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(request.body.password2, saltRounds);
+    const hashedPassword = await bcrypt.hash(
+      request.body.password2,
+      saltRounds
+    );
 
     // Create new user with hashed password
     const newUser = {
@@ -97,6 +100,33 @@ router.post("/register", async (request, response) => {
     return response.status(201).send(user);
   } catch (error) {
     console.error("Error registering user (backend):", error);
+    response.status(500).send("Server error");
+  }
+});
+
+router.post("/login", async (request, response) => {
+  const { username, password } = request.body;
+
+  try {
+    if (!username || !password) {
+      return response.status(400).json({ error: "Missing required fields" });
+    }
+
+    const user = await User.findOne({ username });
+    if (!user) {
+      return response.status(404).json({ error: "Invalid credentials" });
+    }
+
+    // Compare the provided password with the hashed password in the database
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return response.status(401).json({ error: "Invalid credentials" });
+    }
+
+    // Login successful, proceed with further logic
+    return response.status(200).json({ message: "Login successful" });
+  } catch (error) {
+    console.error("Error logging in user (backend):", error);
     response.status(500).send("Server error");
   }
 });

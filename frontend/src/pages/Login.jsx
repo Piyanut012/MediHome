@@ -1,17 +1,40 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { GrCircleAlert } from "react-icons/gr";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Submit logic here
-    console.log("Form submitted");
-    
+
+    if (!username || !password) {
+      setError("กรุณากรอกชื่อผู้ใช้และรหัสผ่าน");
+      return;
+    }
+
+    axios
+      .post("http://localhost:3000/user/login", {
+        username,
+        password,
+      })
+      .then((response) => {
+        console.log(response);
+        if (response.data.message === "Login successful") {
+          navigate("/");
+          setError("");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        setError("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
+      });
   };
 
   return (
@@ -44,9 +67,10 @@ const Login = () => {
                     type="text"
                     name="username"
                     id="username"
+                    value={username}
                     className="mb-4 bg-theme4 border border-theme2 text-gray-700 rounded-lg focus:ring-theme2 focus:border-theme2 block w-full p-2.5"
                     placeholder="medihome99"
-                    required=""
+                    onChange={(e) => setUsername(e.target.value)}
                   />
                 </div>
                 <div>
@@ -60,15 +84,24 @@ const Login = () => {
                     type="password"
                     name="password"
                     id="password"
+                    value={password}
                     placeholder="••••••••"
-                    className="bg-theme4 border border-theme2 text-gray-700 rounded-lg focus:ring-theme2 focus:border-theme2 block w-full p-2.5"
-                    required=""
+                    className="mb-4 bg-theme4 border border-theme2 text-gray-700 rounded-lg focus:ring-theme2 focus:border-theme2 block w-full p-2.5"
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
+                {error && (
+                  <div
+                    className="p-4 text-sm text-red-600 rounded-lg bg-red-200 border border-red-400"
+                    role="alert"
+                  >
+                    <GrCircleAlert className="inline" /> {error}
+                  </div>
+                )}
               </motion.div>
               <hr className="border-black" />
               <button
-                type="submit"
+                onClick={handleSubmit}
                 className="w-full text-theme4 bg-theme1 hover:bg-green-500 focus:ring-4 focus:outline-none focus:ring-theme2 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
               >
                 เข้าสู่ระบบ

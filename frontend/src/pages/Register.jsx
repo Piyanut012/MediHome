@@ -131,12 +131,12 @@ const Register = () => {
         age,
       });
       console.log(response);
-      navigate("/");
+      navigate("/login");
+      setError2([]);
     } catch (error) {
       console.error("Error registering user (frontend):", error);
     }
 
-    setError2([]);
   };
 
   return (
