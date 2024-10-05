@@ -1,0 +1,25 @@
+.flatpickr-calendar.inline {
+    margin: 0.8rem;
+}
+.flatpickr-calendar {
+    border: 1px var(--flatpickr-border-color, #FF79C6);
+    border-radius: var(--flatpickr-border-radius, 0.5rem);
+}
+ .flatpickr-weekdays span {
+    font-weight: bold;
+}
+.flatpickr-day{
+    color: #11942D;
+    font-weight: bold;
+}
+.flatpickr-day.selected, .flatpickr-day:hover, .flatpickr-day.selected:hover {
+    background-color: #11942D; 
+    color: #ffffff;
+    border: none;
+}
+.flatpickr-day.flatpickr-disabled, .flatpickr-day.flatpickr-disabled:hover {
+    color: #9ca3af; 
+}
+.flatpickr-day:nth-child(n+36) {
+    display: none;
+}

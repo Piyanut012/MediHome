@@ -1,8 +1,9 @@
-import React, { useEffect, useState} from "react";
+import React, { useRef, useEffect, useState} from "react";
 import axios from 'axios';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import NavBar from "../../components/NavBar";
 import 'flowbite';
+import './DatePicker.css';
 
 const Home = () => {
   const [users, setUsers] = useState([]);
@@ -11,6 +12,9 @@ const Home = () => {
   const [value, setValue] = useState(1000);
   const [selectedDisease, setSelectedDisease] = useState([]); // State for selected diseases
   const [selectedDate, setSelectedDate] = useState(""); // State for selected date
+
+  const datepickerRef = useRef(null);
+  const [selectedDates, setSelectedDates] = useState([]);
 
   useEffect(() => {
 
@@ -26,6 +30,39 @@ const Home = () => {
             setLoading(false);
         });
     }
+
+    // Initialize Flatpickr
+    flatpickr("#datepicker-actions", {
+      minDate: "today", // Set the minimum date to today
+      locale: "th", // Use the Thai locale
+      dateFormat: "Y-m-d", // Set the date format
+      onChange: (selectedDate) => {
+        setSelectedDate(selectedDate[0]); // Update state with selected date
+      }});
+    
+    if (window.flatpickr) {
+      window.flatpickr(datepickerRef.current, {
+        inline: true,
+        minDate: "2024-10-05",
+        maxDate: "2024-11-20",
+        mode: "multiple",
+        enable: [
+          "2024-10-05", "2024-10-06", "2024-10-09", "2024-10-11", "2024-10-12", "2024-10-13", "2024-10-14", "2024-10-15", "2024-10-16", "2024-10-17", "2024-10-18", "2024-10-19", "2024-11-20"
+        ],
+        locale: "th",
+        dateFormat: "Y-m-d",
+        onChange: function (selectedDates) {
+          const formattedDates = selectedDates.map(date =>
+            date.toLocaleDateString('th-TH', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
+          );
+          setSelectedDates(formattedDates);
+        }
+      })};
 
     fetchData();
   }, []);
@@ -56,9 +93,10 @@ const Home = () => {
         <form onSubmit={handleFilterSubmit}>
         {/* Filter */}
           <div className="grid md:grid-cols-2 md:gap-4 gap-2">
-            <div className="flex justify-between items-center">
+            <div className="flex justify-center items-center">
               {/* Dropdown search disease button */}
-              <button id="dropdownSearchButton" data-dropdown-toggle="dropdownSearch" className="inline-flex items-center w-3/8 h-4/5 px-4 py-2 text-2xl font-medium text-center text-white bg-theme1 bg-opacity-75 rounded-lg hover:bg-opacity-100 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">ประเภทโรค<svg class="w-2.5 h-2.5 ms-10 mt-2 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+              <button id="dropdownSearchButton" data-dropdown-toggle="dropdownSearch" 
+                className="inline-flex items-center w-3/8 h-4/5 px-4 py-2 text-2xl font-medium text-center text-white bg-theme1 bg-opacity-75 rounded-lg hover:bg-opacity-100 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">ประเภทโรค<svg class="w-2.5 h-2.5 ms-10 mt-2 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/></svg>
               </button>
               {/* Dropdown disease */}
@@ -84,16 +122,15 @@ const Home = () => {
               </div>
             </div>
             {/* Select Date */}
-            <div className="flex justify-between items-center">
+            <div className="flex justify-center items-center">
               <div className="relative z-0 w-4/6">
-                  <input 
-                    id="datepicker-actions" 
-                    type="date" 
-                    value={selectedDate} 
-                    onChange={handleDateChange}
-                    className="bg-white bg-opacity-75 border-b-4 border-b-theme1 border-t-0 border-r-0 border-s-0 text-theme1 text-2xl block ps-2 placeholder-theme1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-white dark:text-white dark:focus:ring-theme1 dark:focus:border-theme1" 
-                    placeholder="เลือกวัน"
-                  />
+              <input 
+                id="datepicker-actions" 
+                type="text" // Use text type to work with Flatpickr
+                value={selectedDate ? selectedDate.toLocaleDateString('th-TH') : ''} // Format for Thai display
+                className="bg-white bg-opacity-75 border-b-4 border-b-theme1 border-t-0 border-r-0 border-s-0 text-theme1 text-2xl block ps-2 placeholder-theme1" 
+                placeholder="เลือกวัน"
+              />
               </div>
             </div>
             {/* Range Pirce Filter */}
@@ -121,7 +158,7 @@ const Home = () => {
           </div>
         </div>
         {/* Filter button */}
-        <div className="flex justify-between items-center m-5">
+        <div className="flex justify-between items-center m-5 p-4 border-b-2 border-theme1">
           <button class="bg-theme1 bg-opacity-75 text-2xl text-white font-bold py-2 px-20 ml-auto rounded-3xl hover:bg-theme1 hover:bg-opacity-100" >กรอง</button>
         </div>
         </form>
@@ -175,19 +212,55 @@ const Home = () => {
              </div>
               <div className="flex justify-between items-center p-4 pt-0">
                 <span className="text-green-700 font-bold text-xl">฿999 ต่อวัน</span>
-                <button className="bg-green-600 text-white text-xl px-4 py-1 rounded-lg w-1/3">จอง</button>
+                <button data-modal-target="default-modal" data-modal-toggle="default-modal" className="bg-green-600 text-white text-xl px-4 py-1 rounded-lg w-1/3">จอง</button>
               </div>
           </div>
           {/* Repeat if you want */}
           
         </div>
-      
       </section>
 
+      {/* Booking Modal */}
+      <div id="default-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative p-4 w-full max-w-2xl max-h-full">
+            {/* <Modal content */}
+            <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                {/* Modal header */}
+                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                    <h3 class="text-green-700 text-2xl font-bold text-gray-90">
+                        เลือกวันที่ต้องการจอง
+                    </h3>
+                    <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="default-modal">
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                </div>
+                {/* Modal body */}
+                <div class="grid md:grid-cols-2 md:gap-4 text-gray-400 mb-4">
+                  {/* <div id="datepicker-inline" class="hidden"></div> */}
+                  <div ref={datepickerRef} id="datepicker-inline" className="hidden"></div>
+                  <div class="p-3">
+                    <div class="flex flex-col mt-3">
+                      <h3 className="text-black font-bold text-lg">ยอดชำระเงินทั้งหมด</h3>
+                      <h3 className="text-green-700 font-bold text-xl">฿1998 ({selectedDates.length} วัน)</h3>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Modal footer */}
+                <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+                    <button data-modal-hide="default-modal" type="button" class="ml-auto text-white bg-theme1 bg-opacity-75 hover:bg-opacity-100 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">ยืนยัน</button>
+                    <button data-modal-hide="default-modal" type="button" class="ml-auto py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-red-500 focus:z-10 focus:ring-4 focus:ring-gray-100">ยกเลิก</button>
+                </div>
+            </div>
+        </div>
+      </div>
       
     </div>
-  )
-}
+  );
+};
 
 export default Home;
 
