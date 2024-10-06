@@ -114,13 +114,13 @@ router.post("/login", async (request, response) => {
 
     const user = await User.findOne({ username });
     if (!user) {
-      return response.status(404).json({ error: "Invalid credentials" });
+      return response.status(404).json({ error: "Invalid username" });
     }
 
     // Compare the provided password with the hashed password in the database
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return response.status(401).json({ error: "Invalid credentials" });
+      return response.status(401).json({ error: "Invalid password" });
     }
 
     // Login successful, proceed with further logic

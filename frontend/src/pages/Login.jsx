@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { GrCircleAlert } from "react-icons/gr";
+import { useSnackbar } from "notistack";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const [error, setError] = useState("");
+
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -28,6 +31,7 @@ const Login = () => {
         console.log(response);
         if (response.data.message === "Login successful") {
           navigate("/");
+          enqueueSnackbar("เข้าสู่ระบบสําเร็จ", { variant: "success" });
           setError("");
         }
       })

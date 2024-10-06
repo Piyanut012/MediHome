@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { GrCircleAlert } from "react-icons/gr";
+import { useSnackbar } from "notistack";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -20,6 +21,7 @@ const Register = () => {
   const [error2, setError2] = useState([]);
 
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
   const checkUsername = async () => {
     try {
@@ -131,10 +133,12 @@ const Register = () => {
         age,
       });
       console.log(response);
+      enqueueSnackbar("ลงทะเบียนสําเร็จ", { variant: "success" });
       navigate("/login");
       setError2([]);
     } catch (error) {
       console.error("Error registering user (frontend):", error);
+      enqueueSnackbar("เกิดข้อผิดพลาดในการลงทะเบียน", { variant: "error" });
     }
 
   };
