@@ -20,6 +20,7 @@ app.get('/', (request, response) => {
   });
 
 app.use('/user', UserRoute);
+app.use('/apppointments', UserRoute);
 
 // Connect to the server
 app.listen(PORT, () => {
