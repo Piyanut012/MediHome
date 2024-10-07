@@ -4,10 +4,13 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import NavBar from "../../components/NavBar";
 import 'flowbite';
 import './DatePicker.css';
+import moment from 'moment-timezone';
+import { useSnackbar } from 'notistack';
 
 const Home = () => {
   const [providers, setProviders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { enqueueSnackbar } = useSnackbar();
   const {id} = useParams(); // รับค่า id จาก URL
   const [value, setValue] = useState(1000);
   const [selectedDisease, setSelectedDisease] = useState([]); // State for selected diseases
@@ -15,13 +18,17 @@ const Home = () => {
   const [selectedProvider, setSelectedProvider] = useState(null);
 
   const datepickerRef = useRef(null);
-  const [selectedDates, setSelectedDates] = useState([]);
+  const [selectedDates, setSelectedDates] = useState({ original: [], formatted: [] }); // Initialize as an object
+  // เขตเวลาไทย
+  const timezone = 'Asia/Bangkok';
+
+  // test customer_id
+  const [customer_id, setCustomer_id] = useState("66fc2a9a0f86be8f9faacf5f");
 
   useEffect(() => {
 
     const fetchData = async () => {
         const apiUrl = import.meta.env.VITE_API_URL + '/user/providers';
-        console.log("API URL:", apiUrl);
         axios.get(apiUrl).then((resp) => {
           console.log(resp.data);
           setProviders(resp.data);
@@ -33,7 +40,7 @@ const Home = () => {
         });
     }
 
-    // Initialize Flatpickr
+    // Initialize Flatpickr for filtering by date
     flatpickr("#datepicker-actions", {
       minDate: "today", // Set the minimum date to today
       locale: "th", // Use the Thai locale
@@ -46,16 +53,20 @@ const Home = () => {
     fetchData();
   }, []);
 
+  // Initialize Flatpickr when the selectedProvider changes
   useEffect(() => {
     if (datepickerRef.current) {
       // Initialize Flatpickr only if the ref is available
       const availability = selectedProvider?.providerDetails?.availability || [];
 
-      // แปลง availability ให้อยู่ในรูปแบบที่ enable ใช้งานได้
+      console.log("Availability:", availability);
+
+      // แปลงวันที่ใน availability เป็น enable_dates
       const enable_dates = availability.map(({ startDate, endDate }) => ({
-        from: new Date(startDate).toISOString().split('T')[0], // แปลงเป็น YYYY-MM-DD
-        to: new Date(endDate).toISOString().split('T')[0]      // แปลงเป็น YYYY-MM-DD
-      }));
+        from: moment(startDate).format('YYYY-MM-DD'), // แปลงเป็น YYYY-MM-DD
+        to: moment(endDate).format('YYYY-MM-DD') // แปลงเป็น YYYY-MM-DD
+      }));    
+      console.log("Enable dates:", enable_dates);
 
       flatpickr(datepickerRef.current, {
         inline: true,
@@ -67,6 +78,10 @@ const Home = () => {
           if (selectedDates.length === 2) {
             // ตรวจสอบว่ามีวันที่เลือก 2 วันหรือไม่
             const [startDate, endDate] = selectedDates;
+
+            const origintDate = moment(startDate).format('YYYY-MM-DD');
+            const originEndDate = moment(endDate).format('YYYY-MM-DD');
+
             const formattedStartDate = startDate.toLocaleDateString('th-TH', {
               weekday: 'long',
               year: 'numeric',
@@ -79,9 +94,12 @@ const Home = () => {
               month: 'long',
               day: 'numeric',
             });
-            setSelectedDates([formattedStartDate, formattedEndDate]); // อัปเดต state ของ selectedDates
+            setSelectedDates({
+              original: [origintDate, originEndDate], // store original Date objects
+              formatted: [formattedStartDate, formattedEndDate], // store formatted strings
+            });
           } else {
-            setSelectedDates([]); // เคลียร์วันที่หากไม่เลือก 2 วัน
+            setSelectedDates({ original: [], formatted: [] }); // Clear if not two dates
           }
         }
       });
@@ -95,8 +113,14 @@ const Home = () => {
     );
   };
 
-  const handleDateChange = (e) => {
-    setSelectedDate(e.target.value);
+  // Clear filter
+  const ClearFilter = (e) => {
+    e.preventDefault();
+
+    setSelectedDisease([]);
+    setSelectedDate("");
+    setValue(1000);
+    window.location.reload();
   };
 
   const handleFilterSubmit = async (e) => {
@@ -104,9 +128,11 @@ const Home = () => {
   
     // ตรวจสอบการเลือกข้อมูลและแปลงวันที่
     const formattedDate = selectedDate
-      ? selectedDate.toISOString().slice(0, 10)
+      ? moment(selectedDate).format('YYYY-MM-DD')
       : null;
-  
+    
+    console.log("FormattedDate:", formattedDate);
+
     // สร้างพารามิเตอร์ที่จะส่งไปยัง API
     const params = {};
     if (selectedDisease.length > 0) params.diseases = selectedDisease.join(",");
@@ -118,19 +144,64 @@ const Home = () => {
       const apiUrl = `${import.meta.env.VITE_API_URL}/user/providers/filter`;
       const response = await axios.get(apiUrl, { params });
       setProviders(response.data); // อัปเดตผลลัพธ์
+      enqueueSnackbar('กรองสำเร็จ', { variant: 'success' });
     } catch (error) {
       console.error("Error fetching filtered providers:", error);
     }
   };
 
   const handleBookClick = (provider) => {
-    console.log('Selected provider:', provider);
     setSelectedProvider(provider); // Set the selected provider
   };
 
   const handleCloseModal = () => {
-    setSelectedDates([]); // เคลียร์วันที่ที่เลือก
+    setSelectedDates({ original: [], formatted: [] }); // เคลียร์วันที่ที่เลือก
     setSelectedProvider(null); // ตั้งค่า selectedProvider เป็น null เพื่อปิด modal
+  };
+
+  // Calculate total price based on selected dates
+  const totalPrice = selectedProvider && selectedDates.original.length === 2 
+  ? selectedProvider.providerDetails.price_per_day * 
+    (((new Date(selectedDates.original[1]) - new Date(selectedDates.original[0])) / (1000 * 60 * 60 * 24)) + 1) : 0;
+
+  // Handle booking confirmation
+  const handleConfirmBooking = async () => {
+    if (!selectedProvider || selectedDates.original.length !== 2) {
+      enqueueSnackbar('กรุณาเลือกวันที่ 2 วันขึ้นไป', { variant: 'error' });
+      return;
+    }
+
+    // Prepare appointment data
+    const appointmentData = {
+      customerId: customer_id,
+      providerId: selectedProvider._id,
+      date: {
+        startDate: selectedDates.original[0],
+        endDate: selectedDates.original[1],
+      },
+      total_price: totalPrice,
+      status: 'pending',
+    };
+
+    console.log('Appointment Data:', appointmentData);
+
+    try {
+      // POST request to create the appointment
+      const apiUrl = `${import.meta.env.VITE_API_URL}/appointments/add`;
+      const response = await axios.post(apiUrl, appointmentData);
+
+      if (response.status === 201) {
+        enqueueSnackbar('การจองสำเร็จ', { variant: 'success' });
+        // Optionally clear state or redirect to a booking summary page
+        setSelectedProvider(null);
+        setSelectedDates([]);
+      } else {
+        enqueueSnackbar('การจองล้มเหลว', { variant: 'error' });
+      }
+    } catch (error) {
+      console.error('Error while confirming booking:', error);
+      enqueueSnackbar('การจองล้มเหลว', { variant: 'error' });
+    }
   };
   
   return (
@@ -205,8 +276,9 @@ const Home = () => {
           </div>
         </div>
         {/* Filter button */}
-        <div className="flex justify-between items-center m-5 p-4 border-b-2 border-theme1">
-          <button class="bg-theme1 bg-opacity-75 text-2xl text-white font-bold py-2 px-20 ml-auto rounded-3xl hover:bg-theme1 hover:bg-opacity-100" >กรอง</button>
+        <div className="flex justify-between items-center m-5 p-4 border-b-2 border-theme1 space-x-3">
+          <button class="bg-theme1 bg-opacity-75 text-xl text-white font-bold py-2 px-10 ml-auto rounded-3xl hover:bg-theme1 hover:bg-opacity-100" >กรอง</button>
+          <button onClick={ClearFilter} class="bg-red-300 text-xl text-white font-bold py-2 px-10 rounded-3xl hover:bg-red-400">ล้าง</button>
         </div>
         </form>
         
@@ -335,12 +407,12 @@ const Home = () => {
                     <h3 className="text-black font-bold text-lg">ยอดชำระเงินทั้งหมด</h3>
                     <div className="bg-white shadow-md rounded-lg p-4 mb-4">
                       <h3 className="text-green-700 font-bold text-xl mb-2">
-                        ฿{selectedProvider.providerDetails.price_per_day * (selectedDates.length ? 1 : 0)}
+                        ฿{totalPrice}
                       </h3>
                       <p className="text-gray-600 text-sm">
-                        {selectedDates.length === 2 ? (
+                        {selectedDates.formatted.length === 2 ? (
                           <span>
-                            <span className="font-medium">ระหว่างวันที่:</span> {selectedDates[0]} ถึง {selectedDates[1]}
+                            <span className="font-medium">ระหว่างวันที่:</span> {selectedDates.formatted[0]} ถึง {selectedDates.formatted[1]}
                           </span>
                         ) : (
                           <span className="text-red-500">กรุณาเลือกวันที่</span>
@@ -353,8 +425,11 @@ const Home = () => {
 
               {/* Modal footer */}
               <div className="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-                <button data-modal-hide="default-modal" type="button" className="ml-auto text-white bg-theme1 bg-opacity-75 hover:bg-opacity-100 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                <button type="button" onClick={handleConfirmBooking} className="ml-auto text-white bg-theme1 bg-opacity-75 hover:bg-opacity-100 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                   ยืนยันการจอง
+                </button>
+                <button type="button" onClick={handleCloseModal} class="ml-auto py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-red-500 focus:z-10 focus:ring-4 focus:ring-gray-100">
+                  ยกเลิก
                 </button>
               </div>
             </div>

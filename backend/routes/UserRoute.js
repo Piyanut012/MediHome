@@ -27,7 +27,7 @@ router.post('/add', async (request, response) => {
 // Route to get all providers
 router.get('/providers', async (request, response) => {
     try {
-        const providers = await User.find({ role: 'ผู้ให้บริการ' });
+        const providers = await User.find({ role: 'ผู้ให้บริการ' }).select('-username -password');
         response.send(providers);
     } catch (error) {
         response.status(500).send(error);
@@ -49,9 +49,17 @@ router.get('/providers/filter', async (request, response) => {
     }
 
     // ถ้ามีการส่งวันที่มา ให้กรองวันที่ที่ผู้ให้บริการว่าง
+    // if (date) {
+    //     filter['providerDetails.availability.startDate'] = { $lte: new Date(date) };
+    //     filter['providerDetails.availability.endDate'] = { $gte: new Date(date) };
+    // }
     if (date) {
-        filter['providerDetails.availability.startDate'] = { $lte: new Date(date) };
-        filter['providerDetails.availability.endDate'] = { $gte: new Date(date) };
+        filter['providerDetails.availability'] = {
+            $elemMatch: {
+                startDate: { $lte: new Date(date) },
+                endDate: { $gte: new Date(date) }
+            }
+        };
     }
 
     // ถ้ามีการส่งช่วงราคามา ให้กรองราคาที่น้อยกว่าหรือเท่ากับราคาที่กำหนด
