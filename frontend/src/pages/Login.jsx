@@ -30,9 +30,20 @@ const Login = () => {
       .then((response) => {
         console.log(response);
         if (response.data.message === "Login successful") {
-          navigate("/");
-          enqueueSnackbar("เข้าสู่ระบบสําเร็จ", { variant: "success" });
-          setError("");
+          const token = response.data.token;
+          localStorage.setItem("token", token);
+          const user = response.data.user; // Get the user object from the response
+          if (user.role === "ผู้ให้บริการ") {
+            navigate("/provider");
+            enqueueSnackbar("เข้าสู่ระบบสําเร็จ (ผู้ให้บริการ)", {
+              variant: "success",
+            });
+            setError("");
+          } else {
+            navigate("/");
+            enqueueSnackbar("เข้าสู่ระบบสําเร็จ (ลูกค้า)", { variant: "success" });
+            setError("");
+          }
         }
       })
       .catch((error) => {
@@ -52,7 +63,7 @@ const Login = () => {
             <h1 className="text-xl font-bold leading-tight tracking-tight text-theme1 md:text-2xl">
               เข้าสู่ระบบ
             </h1>
-            <form className="space-y-4 md:space-y-6" action="#" method="post">
+            <form className="space-y-4 md:space-y-6">
               <motion.div
                 key="step1"
                 initial={{ opacity: 0, x: -50 }}
