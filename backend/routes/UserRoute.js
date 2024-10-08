@@ -26,11 +26,41 @@ router.post('/add', async (request, response) => {
 });
 
 // Route to get appointments by providerId
-router.get('/confirm', async (request, response) => {
+router.get('/appointment', async (request, response) => {
     try {
-        const id = "6703f67dfc3f06f0324880b4";  // ตัวอย่าง providerId
-        const appointments = await Appointment.find();
-        response.send(appointments);
+        console.log()
+        const proviid = '6703f67dfc3f06f0324880b4'
+        const appointments = await Appointment.find({ providerId: proviid});
+        response.status(200).send(appointments);
+    } catch (error) {
+        response.status(500).send(error);
+    }
+});
+
+// Route to confirm an appointment
+router.patch('/appointment/confirm/:id', async (request, response) => {
+    const { id } = request.params; // Get appointment ID from URL parameters
+    try {
+        const updatedAppointment = await Appointment.findByIdAndUpdate(id, { status: 'confirmed' }, { new: true });
+        if (!updatedAppointment) {
+            return response.status(404).send('Appointment not found');
+        }
+        response.status(200).send(updatedAppointment);
+    } catch (error) {
+        response.status(500).send(error);
+    }
+});
+
+// Route to delete an appointment
+router.delete('/appointment/:id', async (request, response) => {
+    const { id } = request.params; // Get appointment ID from URL parameters
+    console.log(id)
+    try {
+        const deletedAppointment = await Appointment.findByIdAndDelete(id);
+        if (!deletedAppointment) {
+            return response.status(404).send('Appointment not found');
+        }
+        response.status(200).send('Appointment deleted successfully');
     } catch (error) {
         response.status(500).send(error);
     }

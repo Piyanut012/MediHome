@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';  // นำเข้า Link
 
-function NavBarCare() {
+function NavBarPro() {
   return (
     <nav className="bg-theme2 h-16 p-4 flex justify-between items-center">
       <div className="text-4xl text-theme1 font-bold">MediHome</div>
       <div className="text-2xl flex space-x-0 items-stretch text-gray-800">
-        <Link to="/" className="py-4 px-4 hover:text-green-600 hover:bg-white">หน้าเเรก</Link>
+        <Link to="/HomeProvider" className="py-4 px-4 hover:text-green-600 hover:bg-white">หน้าเเรก</Link>
         <Link to="/Confirm" className="py-4 px-4 hover:text-green-600 hover:bg-white">การจอง</Link>
       </div>
       <div className="flex items-center space-x-4">
@@ -24,4 +24,4 @@ function NavBarCare() {
   );
 }
 
-export default NavBarCare;
+export default NavBarPro;
