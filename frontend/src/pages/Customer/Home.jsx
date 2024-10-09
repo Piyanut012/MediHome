@@ -202,6 +202,7 @@ const Home = () => {
       console.error('Error while confirming booking:', error);
       enqueueSnackbar('การจองล้มเหลว', { variant: 'error' });
     }
+    window.location.reload();
   };
   
   return (
