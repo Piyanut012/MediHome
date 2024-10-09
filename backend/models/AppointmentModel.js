@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-
-const appointmentSchema = mongoose.Schema({
-    customerId: { type: Schema.Types.ObjectId, ref: 'User', required: true },  // อ้างถึงลูกค้าที่นัดหมาย
-    providerId: { type: Schema.Types.ObjectId, ref: 'User', required: true },  // อ้างถึงผู้ให้บริการ
+//วางยากูนะอั้ม
+const appointmentSchema = new mongoose.Schema({
+    customerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },  // อ้างถึงลูกค้าที่นัดหมาย
+    providerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },  // อ้างถึงผู้ให้บริการ
     date: {
       startDate: { type: Date, required: true },  // วันที่เริ่มต้นนัดหมาย
       endDate: { type: Date, required: true }     // วันที่สิ้นสุดนัดหมาย
