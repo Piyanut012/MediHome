@@ -22,12 +22,14 @@ const Login = () => {
       return;
     }
 
-    axios
-      .post("http://localhost:3000/user/login", {
-        username,
-        password,
-      })
-      .then((response) => {
+    const fetchData = async () => {
+      const apiUrl = import.meta.env.VITE_API_URL + '/user/login';
+      console.log("API URL:", apiUrl);
+      try {
+        const response = await axios.post(apiUrl, {
+          username,
+          password,
+        });
         console.log(response);
         if (response.data.message === "Login successful") {
           const token = response.data.token;
@@ -45,11 +47,13 @@ const Login = () => {
             setError("");
           }
         }
-      })
-      .catch((error) => {
+      } catch (error) {
         console.log(error);
         setError("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
-      });
+      }
+    };
+
+    fetchData();
   };
 
   return (

@@ -39,17 +39,21 @@ const Profile = () => {
   useEffect(() => {
     if (user) {
       // Fetch the appointments for the provider
-      const fetchAppointments = async () => {
-        try {
-          const response = await axios.get(
-            `http://localhost:3000/api/appointments/provider/${user._id}` // Use user's ID as providerId
-          );
-          setAppointments(response.data); // Set the fetched appointments to state
-        } catch (error) {
-          console.error("Error fetching appointments:", error);
-        }
+      const fetchData = async () => {
+        const apiUrl =
+          import.meta.env.VITE_API_URL + `/appointment/provider/${user._id}`;
+        console.log("API URL:", apiUrl);
+        axios
+          .get(apiUrl)
+          .then((resp) => {
+            console.log(resp.data);
+            setAppointments(resp.data);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       };
-      fetchAppointments();
+      fetchData();
     }
   }, [user]); // Run the effect when user data is set
 
@@ -145,9 +149,20 @@ const Profile = () => {
                   {new Date(appointment.date.startDate).toLocaleDateString()} -
                   {new Date(appointment.date.endDate).toLocaleDateString()}
                 </p>
-                <p className="text-lg font-bold">
-                  {appointment.customerId.name}
-                </p>
+                <dl className="grid grid-cols-2 gap-x-4 gap-y-2 mt-2">
+                  <dt className="text-sm font-medium text-gray-500">Name</dt>
+                  <dd className="text-sm text-gray-900">
+                    {appointment.customerId.name}
+                  </dd>
+                  <dt className="text-sm font-medium text-gray-500">Email</dt>
+                  <dd className="text-sm text-gray-900">
+                    {appointment.customerId.email}
+                  </dd>
+                  <dt className="text-sm font-medium text-gray-500">Phone</dt>
+                  <dd className="text-sm text-gray-900">
+                    {appointment.customerId.phone}
+                  </dd>
+                </dl>
               </div>
             ))
           ) : (

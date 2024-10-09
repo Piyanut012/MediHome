@@ -24,27 +24,25 @@ const Register = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const checkUsername = async () => {
+    const apiUrl = import.meta.env.VITE_API_URL + "/user/check-username";
+    console.log("API URL:", apiUrl);
     try {
-      const response = await axios.post(
-        "http://localhost:3000/user/check-username",
-        { username }
-      );
-      return response.data.isAvailable;
-    } catch (error) {
-      console.error("Error checking username availability (frontend):", error);
-      return false; // Assume username is not available in case of an error
+      const resp = await axios.post(apiUrl, { username });
+      return resp.data.isAvailable;
+    } catch (err) {
+      console.error("Error checking username availability (frontend):", err);
+      return false;
     }
   };
 
   const checkEmail = async () => {
+    const apiUrl = import.meta.env.VITE_API_URL + "/user/check-email";
+    console.log("API URL:", apiUrl);
     try {
-      const response = await axios.post(
-        "http://localhost:3000/user/check-email",
-        { email }
-      );
-      return response.data.isAvailable;
-    } catch (error) {
-      console.error("Error checking email availability (frontend):", error);
+      const resp = await axios.post(apiUrl, { email });
+      return resp.data.isAvailable;
+    } catch (err) {
+      console.error("Error checking email availability (frontend):", err);
       return false; // Assume email is not available in case of an error
     }
   };
@@ -121,26 +119,30 @@ const Register = () => {
       return;
     }
 
-    try {
-      const response = await axios.post("http://localhost:3000/user/register", {
-        username,
-        password2,
-        role,
-        name,
-        nickname,
-        email,
-        phone,
-        age,
-      });
-      console.log(response);
-      enqueueSnackbar("ลงทะเบียนสําเร็จ", { variant: "success" });
-      navigate("/login");
-      setError2([]);
-    } catch (error) {
-      console.error("Error registering user (frontend):", error);
-      enqueueSnackbar("เกิดข้อผิดพลาดในการลงทะเบียน", { variant: "error" });
-    }
-
+    const fetchData = async () => {
+      const apiUrl = import.meta.env.VITE_API_URL + "/user/register";
+      console.log("API URL:", apiUrl);
+      try {
+        const response = await axios.post(apiUrl, {
+          username,
+          password2,
+          role,
+          name,
+          nickname,
+          email,
+          phone,
+          age,
+        });
+        console.log(response);
+        enqueueSnackbar("ลงทะเบียนสําเร็จ", { variant: "success" });
+        navigate("/login");
+        setError2([]);
+      } catch (error) {
+        console.error("Error registering user (frontend):", error);
+        enqueueSnackbar("เกิดข้อผิดพลาดในการลงทะเบียน", { variant: "error" });
+      }
+    };
+    fetchData();
   };
 
   return (
