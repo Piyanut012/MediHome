@@ -37,6 +37,20 @@ router.get('/appointment', async (request, response) => {
     }
 });
 
+// Route to get appointments by providerId
+router.get('/appointment', async (request, response) => {
+    try {
+        console.log()
+        const proviid = '6703f67dfc3f06f0324880b4'
+        const appointments = await Appointment.find({ providerId: proviid});
+        response.status(200).send(appointments);
+    } catch (error) {
+        response.status(500).send(error);
+    }
+});
+
+
+
 // Route to confirm an appointment
 router.patch('/appointment/confirm/:id', async (request, response) => {
     const { id } = request.params; // Get appointment ID from URL parameters
@@ -65,5 +79,24 @@ router.delete('/appointment/:id', async (request, response) => {
         response.status(500).send(error);
     }
 });
+
+
+router.get('/availability', async (request, response) => {
+    try {
+        const providerId = '6703f67dfc3f06f0324880b4'; // ใช้ตัวแปร providerId
+        const provider = await User.findById(providerId); // ค้นหาผู้ให้บริการโดยใช้ findById
+
+        if (!provider) {
+            return response.status(404).send({ message: "ไม่พบผู้ให้บริการ" });
+        }
+
+        console.log(provider);
+        response.status(200).send(provider);
+    } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการดึงข้อมูล:", error); // log ข้อผิดพลาด
+        response.status(500).send({ message: "เกิดข้อผิดพลาดในการดึงข้อมูล" });
+    }
+});
+
 
 export default router;
