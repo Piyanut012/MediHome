@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@syncfusion/ej2-react-calendars": "^27.1.52",
+    "rsuite": "^5.71.0"
+  }
+}

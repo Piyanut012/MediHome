@@ -81,22 +81,83 @@ router.delete('/appointment/:id', async (request, response) => {
 });
 
 
-router.get('/availability', async (request, response) => {
+router.get('/avail', async (request, response) => {
+    const providerId = '6703f67dfc3f06f0324880b4'; // ใช้ตัวแปร providerId ค่าคงที่
+
     try {
-        const providerId = '6703f67dfc3f06f0324880b4'; // ใช้ตัวแปร providerId
-        const provider = await User.findById(providerId); // ค้นหาผู้ให้บริการโดยใช้ findById
+        const provider = await User.findById(providerId); 
 
         if (!provider) {
             return response.status(404).send({ message: "ไม่พบผู้ให้บริการ" });
         }
 
-        console.log(provider);
-        response.status(200).send(provider);
+        const availability = provider.providerDetails?.availability; 
+
+        if (!availability || availability.length === 0) {
+            return response.status(404).send({ message: "ไม่พบข้อมูล availability" });
+        }
+
+        response.status(200).send({ availability }); // ส่งกลับเป็น object
     } catch (error) {
         console.error("เกิดข้อผิดพลาดในการดึงข้อมูล:", error); // log ข้อผิดพลาด
         response.status(500).send({ message: "เกิดข้อผิดพลาดในการดึงข้อมูล" });
     }
 });
+
+// การเพิ่ม availability
+router.post('/avail', async (request, response) => {
+    const providerId = '6703f67dfc3f06f0324880b4';
+    const { startDate, endDate } = request.body; // รับ startDate และ endDate จาก body
+
+    try {
+        const provider = await User.findById(providerId); // ค้นหาผู้ให้บริการ
+
+        if (!provider) {
+            return response.status(404).send({ message: "ไม่พบผู้ให้บริการ" });
+        }
+
+        // ตรวจสอบว่ามี providerDetails และ availability หรือไม่
+        if (!provider.providerDetails) {
+            provider.providerDetails = { availability: [] }; // สร้าง providerDetails ถ้ายังไม่มี
+        }
+
+        // เพิ่ม availability ใหม่ลงใน provider
+        provider.providerDetails.availability.push({ startDate, endDate });
+        await provider.save(); // บันทึกการเปลี่ยนแปลง
+
+        response.status(201).send({ message: "เพิ่ม availability สำเร็จ", availability: { startDate, endDate } });
+    } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการเพิ่ม availability:", error);
+        response.status(500).send({ message: "เกิดข้อผิดพลาดในการเพิ่ม availability" });
+    }
+});
+
+
+
+
+
+router.delete('/avail/:availabilityId', async (req, res) => {
+    const { availabilityId } = req.params;
+    const providerId = '6703f67dfc3f06f0324880b4'; // กำหนด providerId
+
+    try {
+        const provider = await User.findById(providerId); // ค้นหาผู้ให้บริการ
+
+        if (!provider) {
+            return res.status(404).send({ message: "ไม่พบผู้ให้บริการ" });
+        }
+
+        // ลบ availability ที่ตรงตาม ID
+        provider.providerDetails.availability = provider.providerDetails.availability.filter(avail => avail._id.toString() !== availabilityId);
+        await provider.save(); // บันทึกการเปลี่ยนแปลง
+
+        res.status(200).send({ message: "ลบข้อมูล availability สำเร็จ" });
+    } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการลบข้อมูล:", error);
+        res.status(500).send({ message: "เกิดข้อผิดพลาดในการลบข้อมูล" });
+    }
+});
+
 
 
 export default router;
