@@ -41,7 +41,7 @@ const Profile = () => {
       // Fetch the appointments for the provider
       const fetchData = async () => {
         const apiUrl =
-          import.meta.env.VITE_API_URL + `/appointment/provider/${user._id}`;
+          import.meta.env.VITE_API_URL + `/appointments/provider/${user._id}`;
         console.log("API URL:", apiUrl);
         axios
           .get(apiUrl)
@@ -150,7 +150,7 @@ const Profile = () => {
                   {new Date(appointment.date.endDate).toLocaleDateString()}
                 </p>
                 <dl className="grid grid-cols-2 gap-x-4 gap-y-2 mt-2">
-                  <dt className="text-sm font-medium text-gray-500">Name</dt>
+                  <dt className="text-sm font-medium text-gray-500">ชื่อ</dt>
                   <dd className="text-sm text-gray-900">
                     {appointment.customerId.name}
                   </dd>
@@ -158,7 +158,7 @@ const Profile = () => {
                   <dd className="text-sm text-gray-900">
                     {appointment.customerId.email}
                   </dd>
-                  <dt className="text-sm font-medium text-gray-500">Phone</dt>
+                  <dt className="text-sm font-medium text-gray-500">เบอร์โทรศัพท์</dt>
                   <dd className="text-sm text-gray-900">
                     {appointment.customerId.phone}
                   </dd>

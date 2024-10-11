@@ -4,7 +4,6 @@ import mongoose from 'mongoose';
 import UserRoute from './routes/UserRoute.js';
 import AppointmentRoute from './routes/AppointmentRoute.js';
 import cors from 'cors';
-import AppointmentRoute from './routes/AppointmentRoute.js';
 
 const app = express();
 
