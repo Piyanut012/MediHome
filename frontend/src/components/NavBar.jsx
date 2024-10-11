@@ -35,8 +35,8 @@ const NavBar = () => {
 
       {/* Nav links for larger screens */}
       <div className="hidden md:flex text-2xl text-white space-x-0 items-stretch">
-        <a href="#" className="py-4 px-4 hover:text-green-600 hover:bg-white">จองบริการ</a>
-        <a href="#" className="py-4 px-4 hover:text-green-600 hover:bg-white">ประวัติการจอง</a>
+        <a href="/" className="py-4 px-4 hover:text-green-600 hover:bg-white">จองบริการ</a>
+        <a href="/history" className="py-4 px-4 hover:text-green-600 hover:bg-white">ประวัติการจอง</a>
       </div>
 
       {/* User info and log out for larger screens */}

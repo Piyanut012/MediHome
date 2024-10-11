@@ -8,7 +8,7 @@ const router = express.Router();
 // Route to get all appointments
 router.get('/', async (request, response) => {
     try {
-        const appointments = await Appointment.find();
+        const appointments = await Appointment.find().populate("providerId", "name nickname");
         response.send(appointments);
     } catch (error) {
         response.status(500).send(error);
@@ -30,6 +30,7 @@ router.get('/:id', async (request, response) => {
 router.delete('/delete/:id', async (request, response) => {
     try {
         const { id } = request.params;
+        console.log(id)
         await Appointment.findByIdAndDelete(id);
         response.json({message: "The appointment has been cancelled"});
     } catch (error) {
