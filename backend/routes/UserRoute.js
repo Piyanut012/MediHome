@@ -116,16 +116,16 @@ router.post("/register", async (request, response) => {
     }
 
     // Hash the password
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(
-      request.body.password2,
-      saltRounds
-    );
+    // const saltRounds = 10;
+    // const hashedPassword = await bcrypt.hash(
+    //   request.body.password2,
+    //   saltRounds
+    // );
 
     // Create new user with hashed password
     const newUser = {
       username: request.body.username,
-      password: hashedPassword, // Store the hashed password
+      password: request.body.password2, // Store the hashed password
       role: request.body.role,
       name: request.body.name,
       email: request.body.email,
@@ -157,7 +157,7 @@ router.post("/login", async (request, response) => {
 
     // Compare the provided password with the hashed password in the database
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
+    if (password != user.password) {
       return response.status(401).json({ error: "Invalid password" });
     }
 
