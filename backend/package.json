@@ -14,9 +14,11 @@
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "express": "^4.21.0",
+    "express": "^4.21.1",
     "moment-timezone": "^0.5.46",
     "mongoose": "^8.7.0",
-    "nodemon": "^3.1.7"
+    "nodemon": "^3.1.7",
+    "react-loader-spinner": "^6.1.6",
+    "react-spinners": "^0.14.1"
   }
 }

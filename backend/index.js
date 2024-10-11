@@ -3,6 +3,7 @@ import { PORT, mongoDBURL } from './config.js';
 import mongoose from 'mongoose';
 import UserRoute from './routes/UserRoute.js';
 import AppointmentRoute from './routes/AppointmentRoute.js';
+import HistoryRoute from './routes/HistoryRoute.js';
 import cors from 'cors';
 
 const app = express();
@@ -17,10 +18,11 @@ app.use(cors());
 app.get('/', (request, response) => {
     console.log(request);
     return response.status(234).send('Test response');
-  });
+});
 
 app.use('/user', UserRoute);
 app.use('/appointments', AppointmentRoute);
+app.use('/history', HistoryRoute);
 
 // Connect to the server
 app.listen(PORT, () => {
