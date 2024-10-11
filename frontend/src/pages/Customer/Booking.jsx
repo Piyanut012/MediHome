@@ -2,14 +2,17 @@ import React, { useRef, useEffect, useState} from "react";
 import axios from 'axios';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import NavBar from "../../components/NavBar";
+import CusNavBar from "../../components/CusNavBar";
 import 'flowbite';
 import './DatePicker.css';
 import moment from 'moment-timezone';
 import { useSnackbar } from 'notistack';
 
 const Home = () => {
+  const [user, setUser] = useState(null);
   const [providers, setProviders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const {id} = useParams(); // รับค่า id จาก URL
   const [value, setValue] = useState(1000);
@@ -25,6 +28,27 @@ const Home = () => {
   // test customer_id
   const [customer_id, setCustomer_id] = useState("66fc2a9a0f86be8f9faacf5f");
 
+  // Load user data
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const apiUrl = import.meta.env.VITE_API_URL + '/user/logged-in';
+    axios
+      .get(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        setUser(response.data.user); // Set the user data
+      })
+      .catch((error) => {
+        console.error(error);
+        enqueueSnackbar("กรุณาเข้าสู่ระบบ", { variant: "error" });
+        navigate("/login");
+      });
+  }, [navigate, enqueueSnackbar]);
+
+  // Load providers data
   useEffect(() => {
 
     const fetchData = async () => {
@@ -173,7 +197,7 @@ const Home = () => {
 
     // Prepare appointment data
     const appointmentData = {
-      customerId: customer_id,
+      customerId: user._id,
       providerId: selectedProvider._id,
       date: {
         startDate: selectedDates.original[0],
@@ -191,6 +215,7 @@ const Home = () => {
       const response = await axios.post(apiUrl, appointmentData);
 
       if (response.status === 201) {
+        navigate("/Booking"); // Redirect to the booking page
         enqueueSnackbar('การจองสำเร็จ', { variant: 'success' });
         // Optionally clear state or redirect to a booking summary page
         setSelectedProvider(null);
@@ -199,15 +224,15 @@ const Home = () => {
         enqueueSnackbar('การจองล้มเหลว', { variant: 'error' });
       }
     } catch (error) {
+      navigate("/Booking"); // Redirect to the booking page
       console.error('Error while confirming booking:', error);
       enqueueSnackbar('การจองล้มเหลว', { variant: 'error' });
     }
-    window.location.reload();
   };
   
   return (
     <div className="bg-theme4 font-sans min-h-screen flex-col">
-      <NavBar />
+      <CusNavBar />
       <section className="max-w-5xl mx-auto p-6">
         <form onSubmit={handleFilterSubmit}>
         {/* Filter */}

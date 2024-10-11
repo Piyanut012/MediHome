@@ -6,7 +6,7 @@ import { useSnackbar } from "notistack";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-const ProvNavBar = () => {
+const CusNavBar = () => {
   // require log in
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ const ProvNavBar = () => {
       })
       .then((response) => {
         const user = response.data.user;
-        if (user.role !== "ผู้ให้บริการ") {
+        if (user.role !== "ลูกค้า") {
           enqueueSnackbar("คุณไม่มีสิทธิ์เข้าถึงหน้านี้", { variant: "error" });
           navigate("/");
         } else {
@@ -51,16 +51,16 @@ const ProvNavBar = () => {
       <div className="text-4xl text-theme5 font-bold">MediHome</div>
       <div className="text-2xl text-theme4 flex space-x-0 items-stretch ">
         <Link
-          to="/provider" // แก้เป็น url หน้าหลัก
+          to="/Booking" // แก้เป็น url หน้าหลัก
           className=" py-4 px-4 hover:text-green-600 hover:bg-theme4"
         >
-          หน้าแรก
+          จองบริการ
         </Link>
         <Link
-          to="/provider/profile"
+          to="#"
           className=" py-4 px-4 hover:text-green-600 hover:bg-theme4"
         >
-          ประวัติ
+          ประวัติการจอง
         </Link>
       </div>
       <div className="flex items-center space-x-4">
@@ -77,4 +77,4 @@ const ProvNavBar = () => {
   );
 };
 
-export default ProvNavBar;
+export default CusNavBar;

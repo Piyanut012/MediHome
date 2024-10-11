@@ -36,13 +36,13 @@ const Login = () => {
           localStorage.setItem("token", token);
           const user = response.data.user; // Get the user object from the response
           if (user.role === "ผู้ให้บริการ") {
-            navigate("/provider");
+            navigate("/provider/profile");
             enqueueSnackbar("เข้าสู่ระบบสําเร็จ (ผู้ให้บริการ)", {
               variant: "success",
             });
             setError("");
           } else {
-            navigate("/");
+            navigate("/Booking");
             enqueueSnackbar("เข้าสู่ระบบสําเร็จ (ลูกค้า)", { variant: "success" });
             setError("");
           }

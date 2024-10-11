@@ -12,7 +12,6 @@ export const getAppointmentsByProvider = async (req, res) => {
       .populate("customerId", "name email phone") // Populate customer name from User model
       .populate("providerId", "name"); // Optionally populate provider name
 
-    console.log(appointments);
     res.status(200).send(appointments);
   } catch (err) {
     res

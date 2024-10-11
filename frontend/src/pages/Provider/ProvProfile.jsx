@@ -71,7 +71,7 @@ const Profile = () => {
             <div className="w-1/3 flex justify-center items-center">
               <img
                 src={user.providerDetails.profileImage}
-                className="rounded-full w-40 h-40 border-4 border-black"
+                className="rounded-full w-40 h-40 border-4 border-black object-cover"
               />
             </div>
             <div className="w-2/3 flex flex-col justify-center space-y-10 space-x-10">
