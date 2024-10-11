@@ -2,6 +2,7 @@ import express from 'express';
 import { PORT, mongoDBURL } from './config.js';
 import mongoose from 'mongoose';
 import UserRoute from './routes/UserRoute.js';
+import AppointmentRoute from './routes/AppointmentRoute.js';
 import cors from 'cors';
 import AppointmentRoute from './routes/AppointmentRoute.js';
 
@@ -20,7 +21,7 @@ app.get('/', (request, response) => {
   });
 
 app.use('/user', UserRoute);
-app.use('/appointment', AppointmentRoute);
+app.use('/appointments', AppointmentRoute);
 
 // Connect to the server
 app.listen(PORT, () => {

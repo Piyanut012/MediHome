@@ -11,13 +11,13 @@ npm install -g npm@latest
 Backend
 ```sh
 cd backend
-npm i express nodemon mongoose cors dotenv bcrypt jsonwebtoken
+npm i express nodemon mongoose cors dotenv bcrypt jsonwebtoken moment-timezone
 ```
 
 Frontend
 ```sh
 cd frontend
-npm i react-router-dom axios react-icons notistack dotenv flowbite framer-motion
+npm i react-router-dom axios react-icons notistack dotenv flowbite framer-motion moment-timezone
 ```
 
 วิธีรันทั้งสองฝั่งใช้คำสั่ง
