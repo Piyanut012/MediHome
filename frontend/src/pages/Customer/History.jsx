@@ -90,7 +90,7 @@ const History = () => {
                                                 </td>
                                                 <td className="rounded-md text-center mx-5">
                                                     <div className="flex justify-center gap-x-4">
-                                                        {appointment.status !== "confirmed" && (
+                                                        {appointment.status === "pending" && (
                                                             <div onClick={() => {
                                                                 if (window.confirm("คุณต้องการยกเลิกนัดหมายนี้หรือไม่?")) {
                                                                     const apiUrl = `${import.meta.env.VITE_API_URL}/history/delete/${appointment._id}`;
