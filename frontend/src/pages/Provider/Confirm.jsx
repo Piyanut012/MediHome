@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import axios from 'axios';
 import NavBarPro from '../../components/NavBarpro';
 
@@ -31,22 +31,37 @@ function Confirm() {
         appointment._id === id ? { ...appointment, status: 'confirmed' } : appointment
       ));
       console.log(`Confirmed appointment ID: ${id}`);
+      window.location.reload(); // รีเฟรชหน้าเว็บ
     } catch (error) {
       console.error("Error confirming appointment:", error);
     }
   };
-
+  
   const handleDelete = async (id) => {
-    if (window.confirm("คุณแน่ใจว่าจะยกเลิกการจองนี้หรือไม่?")) {
-      try {
-        await axios.delete(`${import.meta.env.VITE_API_URL}/user/appointment/${id}`);
-        setAppointments(appointments.filter((appointment) => appointment._id !== id));
-        console.log(`Deleted appointment ID: ${id}`);
-      } catch (error) {
-        console.error("Error confirming appointment:", error);
-      }
+    try {
+      await axios.patch(`${import.meta.env.VITE_API_URL}/user/appointment/cancel/${id}`);
+      setAppointments(appointments.map(appointment =>
+        appointment._id === id ? { ...appointment, status: 'cancel' } : appointment
+      ));
+      console.log(`Canceled appointment ID: ${id}`);
+      window.location.reload(); // รีเฟรชหน้าเว็บ
+    } catch (error) {
+      console.error("Error canceling appointment:", error);
     }
   };
+  
+
+  // const handleDelete = async (id) => {
+  //   if (window.confirm("คุณแน่ใจว่าจะยกเลิกการจองนี้หรือไม่?")) {
+  //     try {
+  //       await axios.delete(`${import.meta.env.VITE_API_URL}/user/appointment/${id}`);
+  //       setAppointments(appointments.filter((appointment) => appointment._id !== id));
+  //       console.log(`Deleted appointment ID: ${id}`);
+  //     } catch (error) {
+  //       console.error("Error confirming appointment:", error);
+  //     }
+  //   }
+  // };
 
   if (loading) {
     return (

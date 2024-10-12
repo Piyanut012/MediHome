@@ -26,29 +26,28 @@ router.post('/add', async (request, response) => {
 });
 
 // Route to get appointments by providerId
-router.get('/appointment', async (request, response) => {
-    try {
-        console.log()
-        const proviid = '6703f67dfc3f06f0324880b4'
-        const appointments = await Appointment.find({ providerId: proviid});
-        response.status(200).send(appointments);
-    } catch (error) {
-        response.status(500).send(error);
-    }
-});
+// router.get('/appointment', async (request, response) => {
+//     try {
+//         console.log()
+//         const proviid = '6703f67dfc3f06f0324880b4'
+//         const appointments = await Appointment.find({ providerId: proviid});
+//         response.status(200).send(appointments);
+//     } catch (error) {
+//         response.status(500).send(error);
+//     }
+// });
 
 // Route to get appointments by providerId
 router.get('/appointment', async (request, response) => {
     try {
         console.log()
         const proviid = '6703f67dfc3f06f0324880b4'
-        const appointments = await Appointment.find({ providerId: proviid});
+        const appointments = await Appointment.find({ providerId: proviid, status : 'pending'});
         response.status(200).send(appointments);
     } catch (error) {
         response.status(500).send(error);
     }
 });
-
 
 
 // Route to confirm an appointment
@@ -65,37 +64,42 @@ router.patch('/appointment/confirm/:id', async (request, response) => {
     }
 });
 
-// Route to delete an appointment
-router.delete('/appointment/:id', async (request, response) => {
+
+// Route to cancel an appointment
+router.patch('/appointment/cancel/:id', async (request, response) => {
     const { id } = request.params; // Get appointment ID from URL parameters
-    console.log(id)
     try {
-        const deletedAppointment = await Appointment.findByIdAndDelete(id);
-        if (!deletedAppointment) {
+        const updatedAppointment = await Appointment.findByIdAndUpdate(id, { status: 'cancel' }, { new: true });
+        if (!updatedAppointment) {
             return response.status(404).send('Appointment not found');
         }
-        response.status(200).send('Appointment deleted successfully');
+        response.status(200).send(updatedAppointment);
     } catch (error) {
         response.status(500).send(error);
     }
 });
 
 
+
+// get availability tim
 router.get('/avail', async (request, response) => {
     const providerId = '6703f67dfc3f06f0324880b4'; // ใช้ตัวแปร providerId ค่าคงที่
 
     try {
-        const provider = await User.findById(providerId); 
+        const provider = await User.findById(providerId);
 
         if (!provider) {
             return response.status(404).send({ message: "ไม่พบผู้ให้บริการ" });
         }
 
-        const availability = provider.providerDetails?.availability; 
+        let availability = provider.providerDetails?.availability;
 
         if (!availability || availability.length === 0) {
             return response.status(404).send({ message: "ไม่พบข้อมูล availability" });
         }
+
+        // เรียงลำดับตามฟิลด์ startDate (จากน้อยไปมาก)
+        availability = availability.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
 
         response.status(200).send({ availability }); // ส่งกลับเป็น object
     } catch (error) {
@@ -104,19 +108,20 @@ router.get('/avail', async (request, response) => {
     }
 });
 
-// การเพิ่ม availability
+
+// การเพิ่ม availability time
 router.post('/avail', async (request, response) => {
     const providerId = '6703f67dfc3f06f0324880b4';
-    const { startDate, endDate } = request.body; // รับ startDate และ endDate จาก body
+    const { startDate, endDate } = request.body;
 
     try {
-        const provider = await User.findById(providerId); // ค้นหาผู้ให้บริการ
+        const provider = await User.findById(providerId);
 
         if (!provider) {
             return response.status(404).send({ message: "ไม่พบผู้ให้บริการ" });
         }
 
-        // ตรวจสอบว่ามี providerDetails และ availability หรือไม่
+        // ตรวจสอบว่ามีไหม
         if (!provider.providerDetails) {
             provider.providerDetails = { availability: [] }; // สร้าง providerDetails ถ้ายังไม่มี
         }
