@@ -17,7 +17,7 @@ npm i express nodemon mongoose cors dotenv bcrypt jsonwebtoken moment-timezone
 Frontend
 ```sh
 cd frontend
-npm i react-router-dom axios react-icons notistack dotenv flowbite framer-motion moment-timezone
+npm i react-router-dom axios react-icons notistack dotenv flowbite framer-motion moment-timezone react-bootstrap bootstrap
 ```
 
 วิธีรันทั้งสองฝั่งใช้คำสั่ง

@@ -19,6 +19,8 @@
     "jsonwebtoken": "^9.0.2",
     "moment-timezone": "^0.5.46",
     "mongoose": "^8.7.0",
-    "nodemon": "^3.1.7"
+    "nodemon": "^3.1.7",
+    "react-loader-spinner": "^6.1.6",
+    "react-spinners": "^0.14.1"
   }
 }

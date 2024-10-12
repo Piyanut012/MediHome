@@ -5,7 +5,7 @@
     border: 1px var(--flatpickr-border-color, #FF79C6);
     border-radius: var(--flatpickr-border-radius, 0.5rem);
 }
- .flatpickr-weekdays span {
+.flatpickr-weekdays span {
     font-weight: bold;
 }
 .flatpickr-day{
