@@ -7,8 +7,14 @@ const router = express.Router();
 
 export const getAppointmentsByProvider = async (req, res) => {
   try {
-    const providerId = req.params._id; // Assuming provider ID is sent in the request
-    const appointments = await Appointment.find(providerId)
+    const { providerId } = req.params; // Assuming provider ID is sent in the request
+    const today = new Date();
+    const appointments = await Appointment.find({
+        providerId: providerId,
+        status: { $ne: 'pending' },
+        'date.startDate': { $gte: today }
+      })
+      .sort({ 'date.startDate': 1 })
       .populate("customerId", "name email phone") // Populate customer name from User model
       .populate("providerId", "name"); // Optionally populate provider name
 

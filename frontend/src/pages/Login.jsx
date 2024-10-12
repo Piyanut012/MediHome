@@ -36,7 +36,7 @@ const Login = () => {
           localStorage.setItem("token", token);
           const user = response.data.user; // Get the user object from the response
           if (user.role === "ผู้ให้บริการ") {
-            navigate("/provider/profile");
+            navigate("/HomeProvider");
             enqueueSnackbar("เข้าสู่ระบบสําเร็จ (ผู้ให้บริการ)", {
               variant: "success",
             });

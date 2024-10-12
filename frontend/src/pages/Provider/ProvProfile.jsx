@@ -19,8 +19,9 @@ const Profile = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const apiUrl = import.meta.env.VITE_API_URL + '/user/logged-in';
     axios
-      .get("http://localhost:3000/user/logged-in", {
+      .get(apiUrl, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -40,8 +41,7 @@ const Profile = () => {
     if (user) {
       // Fetch the appointments for the provider
       const fetchData = async () => {
-        const apiUrl =
-          import.meta.env.VITE_API_URL + `/appointments/provider/${user._id}`;
+        const apiUrl = import.meta.env.VITE_API_URL + `/appointments/provider/${user._id}`;
         console.log("API URL:", apiUrl);
         axios
           .get(apiUrl)
@@ -56,6 +56,15 @@ const Profile = () => {
       fetchData();
     }
   }, [user]); // Run the effect when user data is set
+
+  const formatDateToThai = (date) => {
+    return new Date(date).toLocaleDateString('th-TH', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+  
 
   if (!user) {
     return null; // Render nothing if user data hasn't been loaded yet
@@ -139,38 +148,64 @@ const Profile = () => {
 
         {/* Right section: Appointment list */}
         <div className="w-1/2 flex flex-col bg-theme5 shadow-md p-6 overflow-y-scroll max-h-[75vh]">
-          {appointments.length > 0 ? (
-            appointments.map((appointment) => (
-              <div
-                className="bg-gray-100 p-4 mb-4 shadow rounded-lg"
-                key={appointment._id}
-              >
-                <p className="text-sm text-gray-500">
-                  {new Date(appointment.date.startDate).toLocaleDateString()} -
-                  {new Date(appointment.date.endDate).toLocaleDateString()}
-                </p>
-                <dl className="grid grid-cols-2 gap-x-4 gap-y-2 mt-2">
-                  <dt className="text-sm font-medium text-gray-500">ชื่อ</dt>
-                  <dd className="text-sm text-gray-900">
-                    {appointment.customerId.name}
-                  </dd>
-                  <dt className="text-sm font-medium text-gray-500">Email</dt>
-                  <dd className="text-sm text-gray-900">
-                    {appointment.customerId.email}
-                  </dd>
-                  <dt className="text-sm font-medium text-gray-500">เบอร์โทรศัพท์</dt>
-                  <dd className="text-sm text-gray-900">
-                    {appointment.customerId.phone}
-                  </dd>
-                </dl>
-              </div>
-            ))
-          ) : (
-            <p className="text-xl text-center text-gray-500">
-              คุณยังไม่เคยมีการนัดหมาย
-            </p>
-          )}
-        </div>
+        {appointments.length > 0 ? (
+          <>
+            <h2 className="text-2xl font-bold text-gray-700 mb-4">การนัดหมายที่สำเร็จ</h2>
+            <div className="mb-4">
+              {appointments
+                .filter(appointment => appointment.status === 'confirmed')
+                .map(appointment => (
+                  <div
+                    className="p-4 mb-4 shadow rounded-lg bg-green-100"
+                    key={appointment._id}
+                  >
+                    <p className="text-sm text-gray-500">
+                      {formatDateToThai(appointment.date.startDate)} - {formatDateToThai(appointment.date.endDate)}
+                    </p>
+                    <dl className="grid grid-cols-2 gap-x-4 gap-y-2 mt-2">
+                      <dt className="text-sm font-medium text-gray-500">ชื่อ</dt>
+                      <dd className="text-sm text-gray-900">{appointment.customerId.name}</dd>
+                      <dt className="text-sm font-medium text-gray-500">Email</dt>
+                      <dd className="text-sm text-gray-900">{appointment.customerId.email}</dd>
+                      <dt className="text-sm font-medium text-gray-500">เบอร์โทรศัพท์</dt>
+                      <dd className="text-sm text-gray-900">{appointment.customerId.phone}</dd>
+                    </dl>
+                  </div>
+                ))}
+            </div>
+
+            <h2 className="text-2xl font-bold text-gray-700 mb-4">การนัดหมายที่ยกเลิก</h2>
+            <div>
+              {appointments
+                .filter(appointment => appointment.status === 'canceled')
+                .map(appointment => (
+                  <div
+                    className="p-4 mb-4 shadow rounded-lg bg-red-100"
+                    key={appointment._id}
+                  >
+                    <p className="text-sm text-gray-500">
+                      {formatDateToThai(appointment.date.startDate)} - {formatDateToThai(appointment.date.endDate)}
+                    </p>
+                    <dl className="grid grid-cols-2 gap-x-4 gap-y-2 mt-2">
+                      <dt className="text-sm font-medium text-gray-500">ชื่อ</dt>
+                      <dd className="text-sm text-gray-900">{appointment.customerId.name}</dd>
+                      <dt className="text-sm font-medium text-gray-500">Email</dt>
+                      <dd className="text-sm text-gray-900">{appointment.customerId.email}</dd>
+                      <dt className="text-sm font-medium text-gray-500">เบอร์โทรศัพท์</dt>
+                      <dd className="text-sm text-gray-900">{appointment.customerId.phone}</dd>
+                    </dl>
+                  </div>
+                ))}
+            </div>
+          </>
+        ) : (
+          <p className="text-xl text-center text-gray-500">
+            คุณยังไม่เคยมีการนัดหมาย
+          </p>
+        )}
+      </div>
+
+
       </div>
     </div>
   );

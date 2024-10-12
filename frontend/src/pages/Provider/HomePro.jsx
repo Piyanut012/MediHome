@@ -3,29 +3,56 @@ import axios from 'axios';
 import NavBarPro from '../../components/NavBarpro';
 import { DateRangePicker } from 'rsuite';
 import 'rsuite/dist/rsuite.min.css';
+import ProvNavBar from "../../components/ProvNavBar";
+import { useNavigate } from "react-router-dom";
+import { useSnackbar } from "notistack";
 
 function HomePro() {
+  const [user, setUser] = useState(null);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [avail, setAvail] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    const fetchData = async () => {
-      const apiUrl = `${import.meta.env.VITE_API_URL}/user/avail`; 
-      try {
-        const resp = await axios.get(apiUrl);
-        setAvail(resp.data.availability || []); 
-      } catch (err) {
-        setError("เกิดข้อผิดพลาดในการดึงข้อมูล");
-      } finally {
-        setLoading(false);
-      }
-    };
+    const token = localStorage.getItem("token");
+    const apiUrl = import.meta.env.VITE_API_URL + '/user/logged-in';
+    axios
+      .get(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        setUser(response.data.user); // Set the user data
+      })
+      .catch((error) => {
+        console.error(error);
+        enqueueSnackbar("กรุณาเข้าสู่ระบบ", { variant: "error" });
+        navigate("/login");
+      });
+  }, [navigate, enqueueSnackbar]);
 
+  const fetchData = async () => {
+    if (user) {
+    const apiUrl = import.meta.env.VITE_API_URL + `/user/avail/${user._id}`;
+    console.log("API URL:", apiUrl); 
+    try {
+      const resp = await axios.get(apiUrl);
+      setAvail(resp.data.availability || []); 
+    } catch (err) {
+      setError("เกิดข้อผิดพลาดในการดึงข้อมูล");
+    } finally {
+      setLoading(false);
+    }}
+  };
+
+  useEffect(() => {
     fetchData();
-  }, []);
+  }, [user]);
 
   const handleDelete = async (index) => {
     if (!window.confirm("คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลนี้?")) return;
@@ -36,6 +63,7 @@ function HomePro() {
     try {
       await axios.delete(apiUrl);
       setAvail((prevAvail) => prevAvail.filter((_, i) => i !== index));
+      enqueueSnackbar("ลบข้อมูลสำเร็จ", { variant: "success" });
     } catch (err) {
       setError(err.response ? err.response.data.message : "เกิดข้อผิดพลาดในการลบ");
     }
@@ -43,7 +71,8 @@ function HomePro() {
 
   const handleAddAvailability = async () => {
     if (startDate && endDate) {
-      const apiUrl = `${import.meta.env.VITE_API_URL}/user/avail`;
+      const apiUrl = `${import.meta.env.VITE_API_URL}/user/avail/${user._id}`;
+      console.log("API URL:", apiUrl);
       try {
         const response = await axios.post(apiUrl, {
           startDate: startDate,
@@ -53,6 +82,7 @@ function HomePro() {
         setStartDate(null);
         setEndDate(null);
         setError('');
+        enqueueSnackbar("เพิ่มช่วงเวลาว่างสำเร็จ", { variant: "success" });
       } catch (err) {
         setError(err.response ? err.response.data.message : "เกิดข้อผิดพลาดในการเพิ่มข้อมูล");
       }
@@ -68,13 +98,14 @@ function HomePro() {
 
   return (
     <div>
-      <NavBarPro />
+      <ProvNavBar />
       <div className='flex flex-col justify-center items-center my-16 px-80'>
         <p>เพิ่มช่วงเวลาที่ว่าง</p>
         <div>
           <DateRangePicker
             onChange={(value) => {
-              if (value && value.length === 2) {
+              if (value && value.length === 2)
+                {
                 setStartDate(value[0]);
                 setEndDate(value[1]);
               }

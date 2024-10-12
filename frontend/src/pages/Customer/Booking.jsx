@@ -48,21 +48,21 @@ const Home = () => {
       });
   }, [navigate, enqueueSnackbar]);
 
+  const fetchData = async () => {
+    const apiUrl = import.meta.env.VITE_API_URL + '/user/providers';
+    axios.get(apiUrl).then((resp) => {
+      console.log(resp.data);
+      setProviders(resp.data);
+      setLoading(false);
+    })
+    .catch((err) => {
+      console.log(err);
+      setLoading(false);
+    });
+  }
+
   // Load providers data
   useEffect(() => {
-
-    const fetchData = async () => {
-        const apiUrl = import.meta.env.VITE_API_URL + '/user/providers';
-        axios.get(apiUrl).then((resp) => {
-          console.log(resp.data);
-          setProviders(resp.data);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.log(err);
-          setLoading(false);
-        });
-    }
 
     // Initialize Flatpickr for filtering by date
     flatpickr("#datepicker-actions", {
@@ -183,10 +183,32 @@ const Home = () => {
     setSelectedProvider(null); // ตั้งค่า selectedProvider เป็น null เพื่อปิด modal
   };
 
-  // Calculate total price based on selected dates
-  const totalPrice = selectedProvider && selectedDates.original.length === 2 
-  ? selectedProvider.providerDetails.price_per_day * 
-    (((new Date(selectedDates.original[1]) - new Date(selectedDates.original[0])) / (1000 * 60 * 60 * 24)) + 1) : 0;
+  const calculateTotalPrice = (selectedProvider, selectedDates) => {
+    // ตรวจสอบว่า selectedDates และ selectedDates.original มีค่าและเป็น array หรือไม่
+    if (
+      selectedProvider &&
+      selectedDates &&
+      selectedDates.original &&
+      selectedDates.original.length === 2
+    ) {
+      const startDate = new Date(selectedDates.original[0]);
+      const endDate = new Date(selectedDates.original[1]);
+  
+      // คำนวณจำนวนวัน
+      const numberOfDays = ((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+  
+      // คำนวณราคารวม
+      const totalPrice = selectedProvider.providerDetails.price_per_day * numberOfDays;
+  
+      return totalPrice;
+    }
+  
+    return 0;
+  };
+  
+  // const totalPrice = selectedProvider && selectedDates.original.length === 2 
+  // ? selectedProvider.providerDetails.price_per_day * 
+  //   (((new Date(selectedDates.original[1]) - new Date(selectedDates.original[0])) / (1000 * 60 * 60 * 24)) + 1) : 0;
 
   // Handle booking confirmation
   const handleConfirmBooking = async () => {
@@ -203,7 +225,7 @@ const Home = () => {
         startDate: selectedDates.original[0],
         endDate: selectedDates.original[1],
       },
-      total_price: totalPrice,
+      total_price: calculateTotalPrice(selectedProvider, selectedDates),
       status: 'pending',
     };
 
@@ -214,12 +236,13 @@ const Home = () => {
       const apiUrl = `${import.meta.env.VITE_API_URL}/appointments/add`;
       const response = await axios.post(apiUrl, appointmentData);
 
-      if (response.status === 201) {
-        navigate("/Booking"); // Redirect to the booking page
+      if (response.status === 201) {// Redirect to the booking page
         enqueueSnackbar('การจองสำเร็จ', { variant: 'success' });
         // Optionally clear state or redirect to a booking summary page
+        handleCloseModal();
         setSelectedProvider(null);
         setSelectedDates([]);
+        fetchData();
       } else {
         enqueueSnackbar('การจองล้มเหลว', { variant: 'error' });
       }
@@ -433,10 +456,10 @@ const Home = () => {
                     <h3 className="text-black font-bold text-lg">ยอดชำระเงินทั้งหมด</h3>
                     <div className="bg-white shadow-md rounded-lg p-4 mb-4">
                       <h3 className="text-green-700 font-bold text-xl mb-2">
-                        ฿{totalPrice}
+                        ฿{calculateTotalPrice(selectedProvider, selectedDates)}
                       </h3>
                       <p className="text-gray-600 text-sm">
-                        {selectedDates.formatted.length === 2 ? (
+                        {selectedDates && selectedDates.formatted &&selectedDates.formatted.length === 2 ? (
                           <span>
                             <span className="font-medium">ระหว่างวันที่:</span> {selectedDates.formatted[0]} ถึง {selectedDates.formatted[1]}
                           </span>

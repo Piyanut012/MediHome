@@ -51,13 +51,19 @@ const ProvNavBar = () => {
       <div className="text-4xl text-theme5 font-bold">MediHome</div>
       <div className="text-2xl text-theme4 flex space-x-0 items-stretch ">
         <Link
-          to="/provider" // แก้เป็น url หน้าหลัก
+          to="/HomeProvider" // แก้เป็น url หน้าหลัก
           className=" py-4 px-4 hover:text-green-600 hover:bg-theme4"
         >
           หน้าแรก
         </Link>
         <Link
-          to="/provider/profile"
+          to="/Confirm"
+          className=" py-4 px-4 hover:text-green-600 hover:bg-theme4"
+        >
+          การจอง
+        </Link>
+        <Link
+          to="/History"
           className=" py-4 px-4 hover:text-green-600 hover:bg-theme4"
         >
           ประวัติ

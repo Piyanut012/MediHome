@@ -1,28 +1,54 @@
 import  { useState, useEffect } from 'react';
 import axios from 'axios';
 import NavBarPro from '../../components/NavBarpro';
+import { useNavigate } from "react-router-dom";
+import { useSnackbar } from "notistack";
+import ProvNavBar from "../../components/ProvNavBar";
 
 function Confirm() {
+  const [user, setUser] = useState(null);
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    const fetchData = async () => {
-      const apiUrl = import.meta.env.VITE_API_URL + '/user/appointment';
-      console.log("API URL:", apiUrl);
-      try {
-        const resp = await axios.get(apiUrl);
-        console.log(resp.data);
-        setAppointments(resp.data);
-      } catch (err) {
-        console.log(err);
-      } finally {
-        setLoading(false); // Set loading to false after data is fetched or an error occurs
-      }
-    };
+    const token = localStorage.getItem("token");
+    const apiUrl = import.meta.env.VITE_API_URL + '/user/logged-in';
+    axios
+      .get(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        setUser(response.data.user); // Set the user data
+      })
+      .catch((error) => {
+        console.error(error);
+        enqueueSnackbar("กรุณาเข้าสู่ระบบ", { variant: "error" });
+        navigate("/login");
+      });
+  }, [navigate, enqueueSnackbar]);
 
-    fetchData();
-  }, []);
+  const fetchData = async () => {
+    if (user) {
+    const apiUrl = import.meta.env.VITE_API_URL + `/user/appointment/${user._id}`;
+    console.log("API URL:", apiUrl);
+    try {
+      const resp = await axios.get(apiUrl);
+      console.log(resp.data);
+      setAppointments(resp.data);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false); // Set loading to false after data is fetched or an error occurs
+    }}
+  };
+
+  useEffect(() => {
+      fetchData();
+  }, [user]);
 
   const handleConfirm = async (id) => {
     try {
@@ -31,7 +57,8 @@ function Confirm() {
         appointment._id === id ? { ...appointment, status: 'confirmed' } : appointment
       ));
       console.log(`Confirmed appointment ID: ${id}`);
-      window.location.reload(); // รีเฟรชหน้าเว็บ
+      enqueueSnackbar("ยืนยันการจองสำเร็จ", { variant: "success" });
+      fetchData();
     } catch (error) {
       console.error("Error confirming appointment:", error);
     }
@@ -44,7 +71,8 @@ function Confirm() {
         appointment._id === id ? { ...appointment, status: 'cancel' } : appointment
       ));
       console.log(`Canceled appointment ID: ${id}`);
-      window.location.reload(); // รีเฟรชหน้าเว็บ
+      enqueueSnackbar("ยกเลิกการจองสำเร็จ", { variant: "success" });
+      fetchData();
     } catch (error) {
       console.error("Error canceling appointment:", error);
     }
@@ -73,7 +101,7 @@ function Confirm() {
 
   return (
     <div>
-      <NavBarPro />
+      <ProvNavBar />
       <div className='flex flex-col h-screen items-center text-xl'>
         <div className='p-[50px] text-right w-2/3 '>
           <p className="text-sm text-gray-600 text-[20px] mb-1">การจองทั้งหมด</p>
@@ -112,10 +140,10 @@ function Confirm() {
               </div>
               <hr className="my-4 " />
               <div className="flex justify-between">
-                <button onClick={() => handleConfirm(appointment._id)} className="text-gray-400 text-sm text-green-400">
+                <button onClick={() => handleConfirm(appointment._id)} className="text-sm text-green-400">
                   ยืนยัน
                 </button>
-                <button onClick={() => handleDelete(appointment._id)} className="text-gray-400 text-sm text-red-500">
+                <button onClick={() => handleDelete(appointment._id)} className="text-sm text-red-500">
                   ยกเลิก
                 </button>
               </div>

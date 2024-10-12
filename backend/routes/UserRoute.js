@@ -270,11 +270,10 @@ router.delete('/providers', async (request, response) => {
 // });
 
 // Route to get appointments by providerId
-router.get('/appointment', async (request, response) => {
+router.get('/appointment/:providerId', async (request, response) => {
+    const { providerId } = request.params;
     try {
-        console.log()
-        const proviid = '6703f67dfc3f06f0324880b4'
-        const appointments = await Appointment.find({ providerId: proviid, status : 'pending'});
+        const appointments = await Appointment.find({ providerId: providerId, status : 'pending'});
         response.status(200).send(appointments);
     } catch (error) {
         response.status(500).send(error);
@@ -301,7 +300,7 @@ router.patch('/appointment/confirm/:id', async (request, response) => {
 router.patch('/appointment/cancel/:id', async (request, response) => {
     const { id } = request.params; // Get appointment ID from URL parameters
     try {
-        const updatedAppointment = await Appointment.findByIdAndUpdate(id, { status: 'cancel' }, { new: true });
+        const updatedAppointment = await Appointment.findByIdAndUpdate(id, { status: 'canceled' }, { new: true });
         if (!updatedAppointment) {
             return response.status(404).send('Appointment not found');
         }
@@ -314,9 +313,8 @@ router.patch('/appointment/cancel/:id', async (request, response) => {
 
 
 // get availability tim
-router.get('/avail', async (request, response) => {
-    const providerId = '6703f67dfc3f06f0324880b4'; // ใช้ตัวแปร providerId ค่าคงที่
-
+router.get('/avail/:providerId', async (request, response) => {
+    const { providerId } = request.params;
     try {
         const provider = await User.findById(providerId);
 
@@ -342,8 +340,8 @@ router.get('/avail', async (request, response) => {
 
 
 // การเพิ่ม availability time
-router.post('/avail', async (request, response) => {
-    const providerId = '6703f67dfc3f06f0324880b4';
+router.post('/avail/:providerId', async (request, response) => {
+    const { providerId } = request.params;
     const { startDate, endDate } = request.body;
 
     try {
