@@ -1,20 +1,48 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import NavBar from "../../components/NavBar";
+import CusNavBar from "../../components/CusNavBar";
 import Loading from "../../components/Spinner";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { BsInfoCircle } from "react-icons/bs";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { MdOutlineAddBox, MdOutlineDelete } from "react-icons/md";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useSnackbar } from 'notistack';
 
 const History = () => {
+    const [user, setUser] = useState(null);
     const [ appointments, setAppointments ] = useState([]);
     const [ loading, setLoading ] = useState(true);
+    const navigate = useNavigate();
+    const { enqueueSnackbar } = useSnackbar();
+
     // test customer_id
     const [customer_id, setCustomer_id] = useState("66fc2a9a0f86be8f9faacf5f");
-    useEffect(() => {
-        const apiUrl = import.meta.env.VITE_API_URL + '/history';
+
+    // Load user data
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const apiUrl = import.meta.env.VITE_API_URL + '/user/logged-in';
+    axios
+      .get(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        setUser(response.data.user); // Set the user data
+      })
+      .catch((error) => {
+        console.error(error);
+        enqueueSnackbar("กรุณาเข้าสู่ระบบ", { variant: "error" });
+        navigate("/login");
+      });
+    }, [navigate, enqueueSnackbar]);
+
+    const fetchData = async () => {
+        if (user) {
+        const apiUrl = import.meta.env.VITE_API_URL + `/history/${user._id}`;
             axios.get(apiUrl)
             .then((response) => {
                 setAppointments(response.data);
@@ -23,21 +51,26 @@ const History = () => {
                 console.log(error);
                 setLoading(false);
             });
-    }, []);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, [user]);
 
     const formatDate = (dateStr) => {
-        const options = { year: '2-digit', month: 'long', day: '2-digit', hour: '2-digit', minute: '2-digit' };
+        const options = { year: '2-digit', month: 'long', day: '2-digit' };
         const date = new Date(dateStr);
         return new Intl.DateTimeFormat('th-TH', options).format(date);
     };
 
     return (
         <div className="bg-theme4 font-sans min-h-screen flex-col">
-            <NavBar />
+            <CusNavBar />
             <section className="max-w-5xl mx-auto p-6">
                 <div className="p-4">
                     <div className="flex justify-between items-center">
-                        <h1 className="text-3xl my-8 text-theme1">Appointments Status</h1>
+                        <h1 className="text-4xl my-8 text-theme1">ประวัติการจอง</h1>
                         <Link to="/">
                             <OverlayTrigger placement="top" overlay={
                                 <Tooltip id="tooltip-top">
@@ -79,7 +112,15 @@ const History = () => {
                                                 <td className="border border-slate-700 rounded-md text-center">
                                                     {appointment.total_price} -.
                                                 </td>
-                                                <td className="border border-slate-700 rounded-md text-center">
+                                                <td
+                                                    className={`border border-slate-700 rounded-md text-center ${
+                                                        appointment.status === 'confirmed'
+                                                        ? 'bg-green-100 text-green-700' // สีพื้นหลังเขียวและตัวอักษรเขียวเมื่อสถานะเป็น confirmed
+                                                        : appointment.status === 'canceled'
+                                                        ? 'bg-red-100 text-red-700' // สีพื้นหลังแดงและตัวอักษรแดงเมื่อสถานะเป็น canceled
+                                                        : '' // ไม่กำหนดสีอื่นๆ
+                                                    }`}
+                                                >
                                                     {appointment.status}
                                                 </td>
                                                 <td className="border border-slate-700 rounded-md text-center">
@@ -96,13 +137,11 @@ const History = () => {
                                                                     const apiUrl = `${import.meta.env.VITE_API_URL}/history/delete/${appointment._id}`;
                                                                     axios.delete(apiUrl)
                                                                         .then((response) => {
-                                                                            setAppointments(response.data);
-                                                                            console.log(response.data);
-                                                                            setLoading(false);
+                                                                            enqueueSnackbar("ยกเลิกการจองสำเร็จ", { variant: "success" });
+                                                                            fetchData();
                                                                         })
                                                                         .catch((error) => {
                                                                             console.log(error);
-                                                                            setLoading(false);
                                                                         });
                                                                 }
                                                             }}>

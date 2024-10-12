@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState} from "react";
 import axios from 'axios';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import NavBar from "../../components/NavBar";
 import CusNavBar from "../../components/CusNavBar";
 import 'flowbite';
 import './DatePicker.css';
@@ -24,9 +23,6 @@ const Home = () => {
   const [selectedDates, setSelectedDates] = useState({ original: [], formatted: [] }); // Initialize as an object
   // เขตเวลาไทย
   const timezone = 'Asia/Bangkok';
-
-  // test customer_id
-  const [customer_id, setCustomer_id] = useState("66fc2a9a0f86be8f9faacf5f");
 
   // Load user data
   useEffect(() => {

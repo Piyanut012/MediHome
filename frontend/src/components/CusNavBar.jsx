@@ -51,13 +51,13 @@ const CusNavBar = () => {
       <div className="text-4xl text-theme5 font-bold">MediHome</div>
       <div className="text-2xl text-theme4 flex space-x-0 items-stretch ">
         <Link
-          to="/Booking" // แก้เป็น url หน้าหลัก
+          to="/Booking"
           className=" py-4 px-4 hover:text-green-600 hover:bg-theme4"
         >
           จองบริการ
         </Link>
         <Link
-          to="#"
+          to="/History"
           className=" py-4 px-4 hover:text-green-600 hover:bg-theme4"
         >
           ประวัติการจอง

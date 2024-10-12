@@ -6,9 +6,10 @@ import moment from 'moment-timezone';
 const router = express.Router();
 
 // Route to get all appointments
-router.get('/', async (request, response) => {
+router.get('/:customerId', async (request, response) => {
+    const { customerId } = request.params;
     try {
-        const appointments = await Appointment.find().populate("providerId", "name nickname");
+        const appointments = await Appointment.find({ customerId: customerId }).sort({ 'date.startDate': 1 }).populate("providerId", "name nickname");
         response.send(appointments);
     } catch (error) {
         response.status(500).send(error);
