@@ -42,7 +42,7 @@ function HomePro() {
       const resp = await axios.get(apiUrl);
       setAvail(resp.data.availability || []); 
     } catch (err) {
-      setError("เกิดข้อผิดพลาดในการดึงข้อมูล");
+      console.log("เกิดข้อผิดพลาดในการดึงข้อมูล");
     } finally {
       setLoading(false);
     }}
@@ -56,11 +56,12 @@ function HomePro() {
     if (!window.confirm("คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลนี้?")) return;
 
     const availabilityToDelete = avail[index];
-    const apiUrl = `${import.meta.env.VITE_API_URL}/user/avail/${availabilityToDelete._id}`;
+    const apiUrl = `${import.meta.env.VITE_API_URL}/user/avail/${user._id}/${availabilityToDelete._id}`;
 
     try {
       await axios.delete(apiUrl);
-      setAvail((prevAvail) => prevAvail.filter((_, i) => i !== index));
+      // setAvail((prevAvail) => prevAvail.filter((_, i) => i !== index));
+      fetchData();
       enqueueSnackbar("ลบข้อมูลสำเร็จ", { variant: "success" });
     } catch (err) {
       setError(err.response ? err.response.data.message : "เกิดข้อผิดพลาดในการลบ");
@@ -101,7 +102,7 @@ function HomePro() {
     <div>
       <ProvNavBar />
       <div className='flex flex-col justify-center items-center my-16 px-80'>
-        <p>เพิ่มช่วงเวลาที่ว่าง</p>
+        <p className='text-2xl text-theme1'>เพิ่มช่วงเวลาที่ว่าง</p>
         <div>
           <DateRangePicker
             onChange={(value) => {
@@ -146,7 +147,7 @@ function HomePro() {
           )}
         </div>
         <div>
-          <p>ช่วงเวลาว่างทั้งหมด</p>
+          <p className='text-2xl text-theme1 mt-2'>ช่วงเวลาว่างทั้งหมด</p>
           <hr className='m-3' />
           {error && <p className="text-red-500">{error}</p>}
           <div className='grid grid-cols-2 items-center gap-x-2'>

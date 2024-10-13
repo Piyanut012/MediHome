@@ -372,9 +372,9 @@ router.post('/avail/:providerId', async (request, response) => {
 
 
 
-router.delete('/avail/:availabilityId', async (req, res) => {
+router.delete('/avail/:providerId/:availabilityId', async (req, res) => {
     const { availabilityId } = req.params;
-    const providerId = '6703f67dfc3f06f0324880b4'; // กำหนด providerId
+    const { providerId } = req.params; // กำหนด providerId
 
     try {
         const provider = await User.findById(providerId); // ค้นหาผู้ให้บริการ
