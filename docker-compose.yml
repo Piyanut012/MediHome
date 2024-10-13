@@ -1,8 +1,7 @@
 version: '3'
 services:
   frontend:
-    build:
-      context: ./frontend  # Path to your frontend Dockerfile
+    image: piyanut012/medihome-frontend:latest  # Use the image you built
     ports:
       - "5173:5173"  # Map Vite's port
     environment:
@@ -13,8 +12,7 @@ services:
       - app-network
 
   backend:
-    build:
-      context: ./backend  # Path to your backend Dockerfile
+    image: piyanut012/medihome-backend:latest # Use the image you built
     ports:
       - "3000:3000"  # Map backend port
     environment:

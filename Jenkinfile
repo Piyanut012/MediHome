@@ -1,0 +1,88 @@
+pipeline {
+    agent any
+
+    environment {
+        // Define variables
+        DOCKER_IMAGE_BACKEND    = 'piyanut012/medihome-backend:latest'
+        DOCKER_IMAGE_FRONTEND   = 'piyanut012/medihome-frontend:latest'
+        DOCKER_CREDENTIALS      = credentials('dockerhub')
+        SERVER_IP               = '34.143.132.158'
+    }
+
+    stages {
+        stage('Start Jenkins') {
+            steps {
+                // Display credentials and start message
+                sh 'echo Start Jenkins............'
+                sh 'echo docker : user = $DOCKER_CREDENTIALS_USR : password = $DOCKER_CREDENTIALS_PSW'
+            }
+        }
+
+        stage('Build Docker Images') {
+            parallel {
+                stage('Build Backend Image') {
+                    steps {
+                        dir('./backend') {
+                            // Build backend Docker image
+                            sh 'echo "Building backend image = $DOCKER_IMAGE_BACKEND"'
+                            sh 'docker build -t $DOCKER_IMAGE_BACKEND .'
+                        }
+                    }
+                }
+                stage('Build Frontend Image') {
+                    steps {
+                        dir('./frontend') {
+                            // Build frontend Docker image
+                            sh 'echo "Building frontend image = $DOCKER_IMAGE_FRONTEND"'
+                            sh 'docker build -t $DOCKER_IMAGE_FRONTEND .'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Push Images to Docker Hub') {
+            steps {
+                script {
+                    // Login to Docker Hub
+                    sh 'echo $DOCKER_CREDENTIALS_PSW | docker login --username $DOCKER_CREDENTIALS_USR --password-stdin'
+                    // Push backend image
+                    sh 'docker push $DOCKER_IMAGE_BACKEND'
+                    // Push frontend image
+                    sh 'docker push $DOCKER_IMAGE_FRONTEND'
+                }
+            }
+        }
+
+        stage('Clear Docker Components') {
+            steps {
+                script {
+                    // Remove Docker images and containers
+                    sh 'docker stop $(docker ps -a -q) || true'  
+                    sh  'docker rm $(docker ps -a -q) || true' 
+                    sh  'docker rmi $(docker images -q) || true'
+                    sh 'docker system prune -af'
+                }
+            }
+        }
+
+        stage('Deploy with Docker Compose') {
+            steps {
+                script {
+                    sh 'docker compose down'
+                    // Pull images from Docker Hub related to docker-compose.yml
+                    sh 'docker compose pull'
+                    // Start containers with Docker Compose
+                    sh 'docker compose up -d --build'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Logout from Docker Hub
+            sh 'docker logout'
+        }
+    }
+}
