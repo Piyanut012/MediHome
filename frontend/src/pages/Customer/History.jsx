@@ -1,19 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import NavBar from "../../components/NavBar";
 import CusNavBar from "../../components/CusNavBar";
-import Loading from "../../components/Spinner";
 import { useNavigate, Link } from "react-router-dom";
 import { BsInfoCircle } from "react-icons/bs";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { MdOutlineAddBox, MdOutlineDelete } from "react-icons/md";
-// import 'bootstrap/dist/css/bootstrap.min.css';
 import { useSnackbar } from 'notistack';
 
 const History = () => {
     const [user, setUser] = useState(null);
     const [ appointments, setAppointments ] = useState([]);
-    const [ loading, setLoading ] = useState(true);
+    // const [ loading, setLoading ] = useState(true);
     const navigate = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
 
@@ -46,10 +42,9 @@ const History = () => {
             axios.get(apiUrl)
             .then((response) => {
                 setAppointments(response.data);
-                setLoading(false);})
+                })
             .catch((error) => {
                 console.log(error);
-                setLoading(false);
             });
         }
     };
@@ -73,9 +68,7 @@ const History = () => {
                         <h1 className="text-4xl my-8 text-theme1">ประวัติการจอง</h1>
                     
                     </div>
-                    {loading ? (
-                        <Loading />
-                    ) : (
+                    
                         <div>
   {appointments.length > 0 ? (
     <div className="flex flex-col gap-8">
@@ -222,7 +215,7 @@ const History = () => {
   )}
 </div>
 
-                    )}
+                  
                 </div>
             </section>
         </div>

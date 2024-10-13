@@ -1,6 +1,5 @@
 import  { useState, useEffect } from 'react';
 import axios from 'axios';
-import NavBarPro from '../../components/NavBarpro';
 import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import ProvNavBar from "../../components/ProvNavBar";

@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import NavBarPro from '../../components/NavBarpro';
 import { DateRangePicker } from 'rsuite';
-// import 'rsuite/dist/rsuite.min.css';
 import ProvNavBar from "../../components/ProvNavBar";
 import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
