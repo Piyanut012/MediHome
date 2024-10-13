@@ -7,7 +7,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { BsInfoCircle } from "react-icons/bs";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { MdOutlineAddBox, MdOutlineDelete } from "react-icons/md";
-import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap/dist/css/bootstrap.min.css';
 import { useSnackbar } from 'notistack';
 
 const History = () => {
