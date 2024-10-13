@@ -6,7 +6,7 @@ services:
     ports:
       - "5173:5173"  # Map Vite's port
     environment:
-      - VITE_API_URL=http://localhost:3000 # Docker service name as backend URL
+      - VITE_API_URL=http://34.143.132.158:3000 # Docker service name as backend URL
     depends_on:
       - backend  # Ensure backend is started before frontend
     networks:
