@@ -63,7 +63,7 @@ const ProvNavBar = () => {
           การจอง
         </Link>
         <Link
-          to="/History"
+          to="/Profile"
           className=" py-4 px-4 hover:text-green-600 hover:bg-theme4"
         >
           ประวัติ

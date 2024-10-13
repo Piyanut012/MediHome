@@ -91,9 +91,12 @@ function HomePro() {
     }
   };
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('th-TH');
+  const formatDateToThai = (date) => {
+    return new Date(date).toLocaleDateString('th-TH', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
   };
 
   return (
@@ -141,7 +144,7 @@ function HomePro() {
             เพิ่ม
           </button>
           {startDate && endDate && (
-            <p className='p-4'>{`ช่วงวันที่เลือก: ${formatDate(startDate)} ถึง ${formatDate(endDate)}`}</p>
+            <p className='p-4'>{`ช่วงวันที่เลือก: ${formatDateToThai(startDate)} ถึง ${formatDateToThai(endDate)}`}</p>
           )}
         </div>
         <div>
@@ -156,8 +159,8 @@ function HomePro() {
                 avail.map((availability, index) => (
                   <div key={availability._id} className='w-96 flex justify-between items-center p-5 text-sm rounded-2xl mb-3 shadow-md hover:shadow-lg transition-shadow duration-200'>
                     <div>
-                      <p className='font-medium text-base'>{`เริ่มต้น: ${formatDate(availability.startDate)}`}</p>
-                      <p>{`สิ้นสุด: ${formatDate(availability.endDate)}`}</p>
+                      <p className='font-medium text-base'>{`เริ่มต้น: ${formatDateToThai(availability.startDate)}`}</p>
+                      <p>{`สิ้นสุด: ${formatDateToThai(availability.endDate)}`}</p>
                     </div>
                     <div className='flex justify-end mt-2'>
                       <button

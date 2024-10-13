@@ -14,7 +14,7 @@ const Home = () => {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const {id} = useParams(); // รับค่า id จาก URL
-  const [value, setValue] = useState(1000);
+  const [value, setValue] = useState(2000);
   const [selectedDisease, setSelectedDisease] = useState([]); // State for selected diseases
   const [selectedDate, setSelectedDate] = useState(""); // State for selected date
   const [selectedProvider, setSelectedProvider] = useState(null);
@@ -139,8 +139,8 @@ const Home = () => {
 
     setSelectedDisease([]);
     setSelectedDate("");
-    setValue(1000);
-    window.location.reload();
+    setValue(2000);
+    fetchData();
   };
 
   const handleFilterSubmit = async (e) => {
@@ -302,7 +302,7 @@ const Home = () => {
               {/* Display the value */}
               <div className="text-center mb-2">
                   <span className="text-lg font-medium text-theme1 dark:text-gray-300">
-                      ราคา: {value} บาท
+                      ราคาน้อยกว่า: {value} บาท
                   </span>
               </div>
               <input 

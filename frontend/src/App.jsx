@@ -20,7 +20,7 @@ const App = () => {
       {/* Provider */}
       <Route path="/HomeProvider" element={<HomePro/>} />
       <Route path="/Confirm" element={<Confirm/>} />
-      <Route path='/History' element={<ProvProfile />}/>
+      <Route path='/Profile' element={<ProvProfile />}/>
     </Routes>
   )
 }

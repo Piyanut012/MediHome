@@ -273,7 +273,8 @@ router.delete('/providers', async (request, response) => {
 router.get('/appointment/:providerId', async (request, response) => {
     const { providerId } = request.params;
     try {
-        const appointments = await Appointment.find({ providerId: providerId, status : 'pending'});
+        const appointments = await Appointment.find({ providerId: providerId, status : 'pending'})
+        .populate("customerId", "name nickname email phone age");
         response.status(200).send(appointments);
     } catch (error) {
         response.status(500).send(error);
