@@ -1,3 +1,7 @@
+System Architecture
+<img width="1024" height="768" alt="System Architecture" src="https://github.com/user-attachments/assets/cbf3a6f3-d35f-46ad-8cd2-abaef82f8645" />
+
+
 คำสั่ง Set up framework ที่ใช้
 (อย่าลืมอัพเดต npm กับ node ให้ version ล่าสุด)
 
